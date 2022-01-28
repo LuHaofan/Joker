@@ -6,4 +6,4 @@
 5. You should be able to see the full example here.
 
 # How to modify
-1. Go to `./editor/templates/index.html` This is the template file for full example.
+1. Go to [./editor/templates/index.html](./editor/templates/index.html) This is the template file for full example.
