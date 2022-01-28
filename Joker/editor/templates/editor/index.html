@@ -117,6 +117,8 @@
                 <button id="close-toolbar-btn">Hide toolbar</button>
                 <button id="toc-menu-btn">ToC Dropdown menu</button>
                 <button id="toc-default-btn">ToC default</button>
+                <button id="save-btn">Save</button>
+                <button id="load-btn">Load</button>
             </div>
             <div id="test-editormd"></div>
         </div>
@@ -225,6 +227,12 @@
                 
                 $("#toc-default-btn").click(function() {
                     testEditor.config("tocDropdown", false);
+                });
+                $("#save-btn").click(function() {
+                    testEditor.save_note();
+                });
+                $("#load-btn").click(function() {
+                    testEditor.load_note();
                 });
             });
         </script>
