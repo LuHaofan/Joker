@@ -118,7 +118,8 @@
                 <button id="toc-menu-btn">ToC Dropdown menu</button>
                 <button id="toc-default-btn">ToC default</button>
                 <button id="save-btn">Save</button>
-                <button id="load-btn">Load</button>
+ 
+                <input type ='file' id="load-btn" >
             </div>
             <div id="test-editormd"></div>
         </div>
@@ -232,7 +233,24 @@
                     testEditor.save_note();
                 });
                 $("#load-btn").click(function() {
-                    testEditor.load_note();
+                    var files = document.getElementById('load-btn');
+                    files.addEventListener('change', function (event) {
+                    console.log(event.target.files);
+                    console.log(
+                        `文件名称:${event.target.files[0].name}
+                        文件类型:${event.target.files[0].type}
+                        文件大小:${event.target.files[0].size} bytes`
+                        );
+
+
+                    let file = event.target.files[0];
+                    let reader = new FileReader();
+                    reader.readAsText(file);
+                    reader.onload = function () {
+                        console.log(reader.result);
+                        testEditor.load_note(reader.result);
+                        }
+                    });
                 });
             });
         </script>

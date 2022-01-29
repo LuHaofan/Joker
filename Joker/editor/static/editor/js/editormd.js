@@ -2277,12 +2277,12 @@
             document.body.removeChild(anchor);
         },
 
-//        load_note: function(){
+        load_note: function(data){
+                this.cm.setValue(data);
 
 
 
-
-       // },
+       },
         /**
          * 获取编辑器的源文档
          * Get CodeMirror value
