@@ -4,122 +4,22 @@
 <html lang="zh">
     <head>
         <meta charset="utf-8" />
-        <title>Full example - Editor.md examples</title>
+        <title>Joker Note Editor</title>
         <link rel="stylesheet" href="{% static 'editor/css/style.css' %}" />
-        <link rel="stylesheet" href="{% static 'editor/css/editormd.css' %}" />   
-        <style>            
-            /*.editormd-preview-theme-dark {
-                color: #777;
-                background:#2C2827;
-            }
-            
-            .editormd-preview-theme-dark .editormd-toc-menu > .markdown-toc {
-                background:#fff;
-                border:none;
-            }
-            
-            .editormd-preview-theme-dark .editormd-toc-menu > .markdown-toc h1{
-                border-color:#ddd;
-            }
-            
-            .editormd-preview-theme-dark .markdown-body h1,
-            .editormd-preview-theme-dark .markdown-body h2,
-            .editormd-preview-theme-dark .markdown-body hr {
-                border-color: #222;
-            }
-            
-            .editormd-preview-theme-dark .editormd-preview-container  blockquote {
-                color: #555;
-                border-color: #333;
-                background: #222;
-                padding: 0.5em;
-            }
-            
-            .editormd-preview-theme-dark .editormd-preview-container abbr {
-                background:#ff9900;
-                color: #fff;
-                padding: 1px 3px;
-                border-radius: 3px; 
-            }
-            
-            .editormd-preview-theme-dark .editormd-preview-container code {
-                background: #5A9600;
-                color: #fff;
-                border: none;
-                padding: 1px 3px;
-                border-radius: 3px; 
-            }
-            
-            .editormd-preview-theme-dark .editormd-preview-container table {
-                border: none;
-            }
-            
-            .editormd-preview-theme-dark .editormd-preview-container .fa-emoji {
-                color: #B4BF42;
-            }
-            
-            .editormd-preview-theme-dark .editormd-preview-container .katex {
-                color: #FEC93F;
-            }
-            
-            .editormd-preview-theme-dark [class*=editormd-logo] {
-                color: #2196F3;
-            }
-            
-            .editormd-preview-theme-dark .sequence-diagram text {
-                fill: #fff;
-            }
-            
-            .editormd-preview-theme-dark .sequence-diagram rect, 
-            .editormd-preview-theme-dark .sequence-diagram path {
-                color:#fff;
-                fill : #64D1CB;
-                stroke : #64D1CB;
-            }
-            
-            .editormd-preview-theme-dark .flowchart rect, 
-            .editormd-preview-theme-dark .flowchart path {
-                stroke : #A6C6FF;
-            }
-            
-            .editormd-preview-theme-dark .flowchart rect {
-                fill: #A6C6FF;
-            }
-            
-            .editormd-preview-theme-dark .flowchart text {
-                fill: #5879B4;
-            }*/
-        </style>     
+        <link rel="stylesheet" href="{% static 'editor/css/editormd.css' %}" />    
     </head>
     <body>
         <div id="layout">
             <header>
-                <h1>完整示例</h1>
-                <p>Full example</p>
-                <ul style="margin: 10px 0 0 18px;">
-                    <li>Enable HTML tags decode</li>
-                    <li>Enable TeX, Flowchart, Sequence Diagram, Emoji, FontAwesome, Task lists</li>
-                    <li>Enable Image upload</li>
-                    <li>Enable [TOCM], Search Replace, Code fold</li>
-                </ul>            
+                <h1>Joker Markdown Editor</h1>
             </header>
             <div class="btns">
-                <button id="goto-line-btn">Goto line 90</button>
-                <button id="show-btn">Show editor</button>
-                <button id="hide-btn">Hide editor</button>
-                <button id="get-md-btn">Get Markdown</button>
-                <button id="get-html-btn">Get HTML</button>
-                <button id="watch-btn">Watch</button>
-                <button id="unwatch-btn">Unwatch</button>
-                <button id="preview-btn">Preview HTML (Press Shift + ESC cancel)</button>
-                <button id="fullscreen-btn">Fullscreen (Press ESC cancel)</button>
-                <button id="show-toolbar-btn">Show toolbar</button>
-                <button id="close-toolbar-btn">Hide toolbar</button>
-                <button id="toc-menu-btn">ToC Dropdown menu</button>
-                <button id="toc-default-btn">ToC default</button>
+                <button id="export-btn">Export</button>
                 <button id="save-btn">Save</button>
- 
-                <input type ='file' id="load-btn" >
+                <button id="preview-btn">Preview</button>
+                <button id="fullscreen-btn">Fullscreen</button>
+                <button id="toggle-toolbar-btn">Toolbar</button>
+                <input type ='file' id="import-btn" >
             </div>
             <div id="test-editormd"></div>
         </div>
@@ -131,6 +31,7 @@
             $(function() {
                 
                 $.get("{% static 'editor/notes/test.md' %}", function(md){
+                    // console.log(md);
                     testEditor = editormd("test-editormd", {
                         width: "90%",
                         height: 740,
@@ -145,7 +46,7 @@
                         searchReplace : true,
                         //watch : false,                // 关闭实时预览
                         htmlDecode : "style,script,iframe|on*",            // 开启 HTML 标签解析，为了安全性，默认不开启    
-                        //toolbar  : false,             //关闭工具栏
+                        // toolbar  : false,             //关闭工具栏
                         //previewCodeHighlight : false, // 关闭预览 HTML 的代码块高亮，默认开启
                         emoji : true,
                         taskList : true,
@@ -174,66 +75,16 @@
                         }
                     });
                 });
-                
-                $("#goto-line-btn").bind("click", function(){
-                    testEditor.gotoLine(90);
-                });
-                
-                $("#show-btn").bind('click', function(){
-                    testEditor.show();
-                });
-                
-                $("#hide-btn").bind('click', function(){
-                    testEditor.hide();
-                });
-                
-                $("#get-md-btn").bind('click', function(){
-                    alert(testEditor.getMarkdown());
-                });
-                
-                $("#get-html-btn").bind('click', function() {
-                    alert(testEditor.getHTML());
-                });                
-                
-                $("#watch-btn").bind('click', function() {
-                    testEditor.watch();
-                });                 
-                
-                $("#unwatch-btn").bind('click', function() {
-                    testEditor.unwatch();
-                });              
-                
-                $("#preview-btn").bind('click', function() {
-                    testEditor.previewing();
-                });
-                
-                $("#fullscreen-btn").bind('click', function() {
-                    testEditor.fullscreen();
-                });
-                
-                $("#show-toolbar-btn").bind('click', function() {
-                    testEditor.showToolbar();
-                });
-                
-                $("#close-toolbar-btn").bind('click', function() {
-                    testEditor.hideToolbar();
-                });
-                
-                $("#toc-menu-btn").click(function(){
-                    testEditor.config({
-                        tocDropdown   : true,
-                        tocTitle      : "目录 Table of Contents",
-                    });
-                });
-                
-                $("#toc-default-btn").click(function() {
-                    testEditor.config("tocDropdown", false);
-                });
-                $("#save-btn").click(function() {
+
+                $("#export-btn").bind('click', function() {
                     testEditor.save_note();
                 });
-                $("#load-btn").click(function() {
-                    var files = document.getElementById('load-btn');
+                $("#save-btn").bind('click', function () {
+                    var md = testEditor.getMarkdown();
+                    console.log(md);
+                });
+                $("#import-btn").bind('click', function() {
+                    var files = document.getElementById('import-btn');
                     files.addEventListener('change', function (event) {
                     console.log(event.target.files);
                     console.log(
@@ -251,6 +102,24 @@
                         testEditor.load_note(reader.result);
                         }
                     });
+                });
+                
+                $("#preview-btn").bind('click', function() {
+                    testEditor.previewing();
+                });
+                
+                $("#fullscreen-btn").bind('click', function() {
+                    testEditor.fullscreen();
+                });
+                var flag = 1;
+                $("#toggle-toolbar-btn").bind('click', function() {
+                    if (flag == 0) {
+                        testEditor.showToolbar();
+                        flag = 1;
+                    }else{
+                        testEditor.hideToolbar();
+                        flag = 0;
+                    }
                 });
             });
         </script>

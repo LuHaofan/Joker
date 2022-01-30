@@ -7,3 +7,7 @@
 
 # How to modify
 1. Go to [./editor/templates/index.html](./editor/templates/index.html) This is the template file for full example.
+
+# Save and load
+- Find the `note-list.json` file in the `./editor/static/editor/json/` folder. It is an example of how my server side code will generate the format of json file.
+- In the `index.html` page, create a sidebar (you can adjust the width of the editor, if it looks better), display the notes' title as a list, give the title a `<a href="path"> </a>` tag, where the `path` is the value of `path` property in json file.
