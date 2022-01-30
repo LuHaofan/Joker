@@ -6,7 +6,7 @@ from editor.models import Tag
 from editor.models import Author
 
 
-config.DATABASE_URL = 'bolt://neo4j:12345@localhost:7687/test'
+config.DATABASE_URL = 'bolt://neo4j:12345@localhost:7687'
 
 
 # clear existing nodes
