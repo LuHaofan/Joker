@@ -15,6 +15,9 @@
 # Setting up Neo4j (Local Development)
 1. Install Neo4j Desktop from here https://neo4j.com/try-neo4j/
 2. Create a new DBMS in Neo4j Desktop, user="neo4j" password="12345"
-3. Add database "test"
-4. Start the DBMS
-5. (optional) Run init_test_data.py script to create some example nodes in the test database
+3. Start the DBMS
+4. Run `python manage.py install_labels`
+
+For testing/sandbox:
+5. Add database "test"
+6. Run `python init_test_data.py` script to create some example nodes in the test database
