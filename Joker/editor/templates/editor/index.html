@@ -7,12 +7,23 @@
         <title>Joker Note Editor</title>
         <link rel="stylesheet" href="{% static 'editor/css/style.css' %}" />
         <link rel="stylesheet" href="{% static 'editor/css/editormd.css' %}" />    
+        <style>
+
+            #note-title {
+                margin-left: 95px;
+                height: 40px;
+                font-size: 30px;
+                line-height: 40px;
+            }
+        </style>
     </head>
     <body>
+        {% csrf_token %}
         <div id="layout">
             <header>
                 <h1>Joker Markdown Editor</h1>
             </header>
+            <input type="text" name="note-title" id="note-title" value="test.md">
             <div class="btns">
                 <button id="export-btn">Export</button>
                 <button id="save-btn">Save</button>
@@ -80,26 +91,37 @@
                     testEditor.save_note();
                 });
                 $("#save-btn").bind('click', function () {
-                    var md = testEditor.getMarkdown();
-                    console.log(md);
+                    console.log($("#note-title").val())
+                    $.ajax({
+                        method:'POST',
+                        url: "{% url 'editor:save_note' %}",
+                        data:{
+                            md:testEditor.getMarkdown(),
+                            fname: $("#note-title").val(),
+                            csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                        }, 
+                        success: function() {
+                            alert('Note saved');
+                        },
+                    });
                 });
                 $("#import-btn").bind('click', function() {
                     var files = document.getElementById('import-btn');
                     files.addEventListener('change', function (event) {
-                    console.log(event.target.files);
-                    console.log(
-                        `文件名称:${event.target.files[0].name}
-                        文件类型:${event.target.files[0].type}
-                        文件大小:${event.target.files[0].size} bytes`
-                        );
+                        console.log(event.target.files);
+                        console.log(
+                            `文件名称:${event.target.files[0].name}
+                            文件类型:${event.target.files[0].type}
+                            文件大小:${event.target.files[0].size} bytes`
+                            );
 
 
-                    let file = event.target.files[0];
-                    let reader = new FileReader();
-                    reader.readAsText(file);
-                    reader.onload = function () {
-                        console.log(reader.result);
-                        testEditor.load_note(reader.result);
+                        let file = event.target.files[0];
+                        let reader = new FileReader();
+                        reader.readAsText(file);
+                        reader.onload = function () {
+                            console.log(reader.result);
+                            testEditor.load_note(reader.result);
                         }
                     });
                 });

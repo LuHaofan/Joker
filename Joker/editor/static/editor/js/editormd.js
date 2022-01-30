@@ -2263,13 +2263,13 @@
         
         save_note: function(){ //Save note to text file 
             var blob;
-            blob = new Blob([this.getMarkdown()],{type: 'text/plain'});
+            blob = new Blob([this.getMarkdown()],{type: 'text/markdown'});
             var bloburl = URL.createObjectURL(blob);
             //location.href = bloburl;
             var anchor = document.createElement("a");
             anchor.style.visibility = "hidden";
             anchor.href =bloburl;
-            anchor.download = "test.txt";
+            anchor.download = "test.md";
             document.body.appendChild(anchor);
             var evt = document.createEvent("MouseEvents");
             evt.initEvent("click",true,true);
@@ -2279,10 +2279,7 @@
 
         load_note: function(data){
                 this.cm.setValue(data);
-
-
-
-       },
+        },
         /**
          * 获取编辑器的源文档
          * Get CodeMirror value
