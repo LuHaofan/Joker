@@ -96,7 +96,7 @@
                     console.log(json.notes.length);
                     for(var i = 0; i<json.notes.length;i++){
                         console.log(i)
-                        document.getElementById("note_list").innerHTML += ("<a href=\" # \" class=\"w3-bar-item w3-button\" >" +json.notes[i].title + "</a>");
+                        document.getElementById("note_list").innerHTML += ("<a href= \" "+ json.notes[i].path+ " \" class=\" w3-bar-item w3-button\" >" +json.notes[i].title + "</a>");
                     }
                     
 
