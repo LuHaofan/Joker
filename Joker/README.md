@@ -18,6 +18,6 @@
 3. Start the DBMS
 4. Run `python manage.py install_labels`
 
-For testing/sandbox:
+## For testing/sandbox:
 5. Add database "test"
 6. Run `python init_test_data.py` script to create some example nodes in the test database
