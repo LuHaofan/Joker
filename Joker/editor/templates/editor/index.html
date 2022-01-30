@@ -86,6 +86,10 @@
                         }
                     });
                 });
+                /* note-list.json is loaded here */
+                $.get("{% static 'editor/json/note-list.json' %}", function(json){
+                    console.log(json);
+                });
 
                 $("#export-btn").bind('click', function() {
                     testEditor.save_note();
