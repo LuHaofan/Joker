@@ -6,7 +6,8 @@
         <meta charset="utf-8" />
         <title>Joker Note Editor</title>
         <link rel="stylesheet" href="{% static 'editor/css/style.css' %}" />
-        <link rel="stylesheet" href="{% static 'editor/css/editormd.css' %}" />    
+        <link rel="stylesheet" href="{% static 'editor/css/editormd.css' %}" />  
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">  
         <style>
 
             #note-title {
@@ -18,8 +19,11 @@
         </style>
     </head>
     <body>
+        <div id ="note_list" class="w3-sidebar w3-bar-block" style="width:25%">
+            <h3 class="w3-bar-item">Note List</h3>
+          </div>
         {% csrf_token %}
-        <div id="layout">
+        <div id="layout" style="margin-left:25%">
             <header>
                 <h1>Joker Markdown Editor</h1>
             </header>
@@ -89,7 +93,16 @@
                 /* note-list.json is loaded here */
                 $.get("{% static 'editor/json/note-list.json' %}", function(json){
                     console.log(json);
+                    console.log(json.notes.length);
+                    for(var i = 0; i<json.notes.length;i++){
+                        console.log(i)
+                        document.getElementById("note_list").innerHTML += ("<a href=\" # \" class=\"w3-bar-item w3-button\" >" +json.notes[i].title + "</a>");
+                    }
+                    
+
+
                 });
+                
 
                 $("#export-btn").bind('click', function() {
                     testEditor.save_note();
