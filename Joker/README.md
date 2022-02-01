@@ -18,3 +18,12 @@
 3. Start the DBMS
 4. Run `python manage.py install_labels`
 5. Run `python init_test_data.py` script to create some example nodes
+
+# Phase 2 functions
+1. click `New` button to create a new note, the default name for the new note is `new note.md`.
+2. click `Export` to download the note to local
+3. click `Save` to save the note to server
+4. click `Preview` to see the preview of the markdown note
+5. click `choose file` to import a note from local machine
+6. You can rename the note at the textbox
+7. You can find all the notes in the `Note list` sidebar.

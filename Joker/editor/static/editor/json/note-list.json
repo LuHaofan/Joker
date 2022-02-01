@@ -1,16 +1,1 @@
-{
-    "notes": [
-        {
-            "title": "test2",
-            "path": "editor/static/editor/notes/test2.md"
-        },
-        {
-            "title": "test",
-            "path": "editor/static/editor/notes/test.md"
-        },
-        {
-            "title": "test1",
-            "path": "editor/static/editor/notes/test1.md"
-        }
-    ]
-}
+{"notes": [{"title": "test5", "path": "../static/editor/notes/test5.md"}, {"title": "test2", "path": "../static/editor/notes/test2.md"}, {"title": "test4", "path": "../static/editor/notes/test4.md"}, {"title": "test3", "path": "../static/editor/notes/test3.md"}, {"title": "test", "path": "../static/editor/notes/test.md"}, {"title": "test1", "path": "../static/editor/notes/test1.md"}, {"title": "new note", "path": "../static/editor/notes/new note.md"}, {"title": "test6", "path": "../static/editor/notes/test6.md"}]}

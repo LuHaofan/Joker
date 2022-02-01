@@ -7,12 +7,13 @@ def index(request):
 
 
 def generateNoteList():
-    root = "editor/static/editor/notes/"
+    note_dir_root = "./editor/static/editor/notes/"
     res = {"notes":[]}
-    for _, _, files in os.walk(root, topdown=False):
+    note_root = "../static/editor/notes/"
+    for _, _, files in os.walk(note_dir_root, topdown=False):
         for name in files:
             title = name[:-3]
-            path = os.path.join(root, name)
+            path = os.path.join(note_root,name)
             res["notes"].append({
                 "title": title,
                 "path" : path

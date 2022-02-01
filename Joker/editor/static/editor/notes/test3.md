@@ -1,21 +1,4 @@
-# This is test 3
-
-![](https://pandao.github.io/editor.md/images/logos/editormd-logo-180x180.png)
-
-![](https://img.shields.io/github/stars/pandao/editor.md.svg) ![](https://img.shields.io/github/forks/pandao/editor.md.svg) ![](https://img.shields.io/github/tag/pandao/editor.md.svg) ![](https://img.shields.io/github/release/pandao/editor.md.svg) ![](https://img.shields.io/github/issues/pandao/editor.md.svg) ![](https://img.shields.io/bower/v/editor.md.svg)
-
-**目录 (Table of Contents)**
-# Hello World
-[TOCM]
-
-[TOC]
-
-# Heading 1
-## Heading 2               
-### Heading 3
-#### Heading 4
-##### Heading 5
-###### Heading 6
+# Test 6
 # Heading 1 link [Heading link](https://github.com/pandao/editor.md "Heading link")
 ## Heading 2 link [Heading link](https://github.com/pandao/editor.md "Heading link")
 ### Heading 3 link [Heading link](https://github.com/pandao/editor.md "Heading link")
