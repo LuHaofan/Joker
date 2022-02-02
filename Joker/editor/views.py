@@ -30,3 +30,13 @@ def saveNote(request):
         f.write(md)
     generateNoteList()
     return HttpResponse()
+
+def deleteNote(request):
+    fname = request.POST.get('fname')
+    root = "editor/static/editor/notes/"
+    path = root+fname
+    print("deleting note at path:", path)
+    if os.path.exists(path):
+        os.remove(path)
+    generateNoteList()
+    return HttpResponse()
