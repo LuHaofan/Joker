@@ -31,14 +31,16 @@
         <header>
             <h1>Joker Markdown Editor</h1>
         </header>
-        <input type="text" name="note-title" id="note-title" value="test.md">
+        <input type="text" name="note-title" id="note-title" value="">
         <div class="btns">
             <button id="create-btn">New</button>
-            <button id="export-btn">Export</button>
+            <button id="delete-btn">Delete</button>
+            
             <button id="save-btn">Save</button>
             <button id="preview-btn">Preview</button>
             <!-- <button id="fullscreen-btn">Fullscreen</button> -->
             <button id="toggle-toolbar-btn">Toolbar</button>
+            <button id="export-btn">Export</button>
             <input type='file' id="import-btn">
         </div>
         <div id="test-editormd"></div>
@@ -50,7 +52,7 @@
 
         $(function () {
 
-            $.get("{% static 'editor/notes/test.md' %}", function (md) {
+            $.get("{% static 'editor/notes/empty.md' %}", function (md) {
                 // console.log(md);
                 testEditor = editormd("test-editormd", {
                     width: "90%",
@@ -105,41 +107,72 @@
                         $("#note_list ul").append('<li><a href="#">' + json.notes[i].title + '</a></li>');
                     }
                     $('#note_list a').addClass("w3-bar-item w3-button");
-                    $('#note_list ul').children().click(function(){
-                        console.log($(this).index());
+                    $('#note_list ul').children().click(function () {
                         var path = json.notes[$(this).index()].path;
                         var title = json.notes[$(this).index()].title;
                         console.log(title);
-                        $.get(path, function(md){
+                        $.get(path, function (md) {
+                            $("#note-title").val(title);
                             testEditor.load_note(md);
-                            $("#note-title").attr("value",title+".md");
                         });
                     });
                 });
             }
-            
-            $("#create-btn").bind('click', function(){
-                testEditor.load_note("");
-                $("#note-title").attr("value","new note.md");
+
+            function load_default() {
+                $("#note-title").val("");
+                testEditor.clear();
+            }
+
+            $("#create-btn").bind('click', function () {
+                load_default();
             })
+
+            $("#delete-btn").bind('click', function () {
+                if ($("#note-title").val() == "") {
+                    alert("Please specify the note you want to delete");
+                } else {
+                    $.ajax({
+                        method: 'POST',
+                        url: "{% url 'editor:delete_note' %}",
+                        data: {
+                            fname: $("#note-title").val() + ".md",
+                            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                        },
+                        success: function () {
+                            alert('Note deleted');
+                            load_note_list();
+                            load_default();
+                        },
+                    });
+                }
+            });
+
             $("#export-btn").bind('click', function () {
                 testEditor.save_note();
             });
+
             $("#save-btn").bind('click', function () {
                 console.log($("#note-title").val())
-                $.ajax({
-                    method: 'POST',
-                    url: "{% url 'editor:save_note' %}",
-                    data: {
-                        md: testEditor.getMarkdown(),
-                        fname: $("#note-title").val(),
-                        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
-                    },
-                    success: function () {
-                        alert('Note saved');
-                        load_note_list();
-                    },
-                });
+                if ($("#note-title").val() == "") {
+                    alert("Please give your note a title");
+                } else {
+                    $.ajax({
+                        method: 'POST',
+                        url: "{% url 'editor:save_note' %}",
+                        data: {
+                            md: testEditor.getMarkdown(),
+                            fname: $("#note-title").val() + ".md",
+                            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                        },
+                        success: function () {
+                            load_default();
+                            alert('Note saved');
+                            load_note_list();
+                        },
+                    });
+                }
+
             });
 
             $("#import-btn").bind('click', function () {
@@ -167,9 +200,6 @@
                 testEditor.previewing();
             });
 
-            // $("#fullscreen-btn").bind('click', function () {
-            //     testEditor.fullscreen();
-            // });
             var flag = 1;
             $("#toggle-toolbar-btn").bind('click', function () {
                 if (flag == 0) {

@@ -12,6 +12,8 @@ def generateNoteList():
     note_root = "../static/editor/notes/"
     for _, _, files in os.walk(note_dir_root, topdown=False):
         for name in files:
+            if name == "empty.md":
+                continue
             title = name[:-3]
             path = os.path.join(note_root,name)
             res["notes"].append({
@@ -28,5 +30,15 @@ def saveNote(request):
     root = "editor/static/editor/notes/"
     with open(root+fname, "w") as f:
         f.write(md)
+    generateNoteList()
+    return HttpResponse()
+
+def deleteNote(request):
+    fname = request.POST.get('fname')
+    root = "editor/static/editor/notes/"
+    path = root+fname
+    print("deleting note at path:", path)
+    if os.path.exists(path):
+        os.remove(path)
     generateNoteList()
     return HttpResponse()
