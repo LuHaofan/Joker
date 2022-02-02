@@ -13,6 +13,11 @@
 - In the `index.html` page, create a sidebar (you can adjust the width of the editor, if it looks better), display the notes' title as a list, give the title a `<a href="path"> </a>` tag, where the `path` is the value of `path` property in json file.
 
 # Setting up Neo4j (Local Development for Testing)
+Requirements:
+`pip install neomodel django-neomodel`
+
+If running Python 3.10, may need to use a virtual environment running Python 3.9 because some parts of neo4j are incompatible with Python 3.10
+
 1. Install Neo4j Desktop from here https://neo4j.com/try-neo4j/
 2. Create a new DBMS in Neo4j Desktop, user="neo4j" password="12345"
 3. Start the DBMS
