@@ -1,1 +1,49 @@
-{"notes": []}
+{
+    "notes": [
+        {
+            "title": "WiFi",
+            "path": "../static/editor/notes/WiFi.md",
+            "papers": [
+                {
+                    "authors": [
+                        {
+                            "first name": "Ali",
+                            "last name": "Abedi"
+                        },
+                        {
+                            "first name": "Omid",
+                            "last name": "Abari"
+                        }
+                    ],
+                    "title": "WiFi Says \"Hi!\" Back to Strangers!",
+                    "year": 2020,
+                    "isbn": 9781450381451,
+                    "publisher": "Association for Computing Machinery",
+                    "address": "New York, NY, USA",
+                    "url": "https://doi.org/10.1145/3422604.3425951",
+                    "doi": "10.1145/3422604.3425951",
+                    "booktitle": "Proceedings of the 19th ACM Workshop on Hot Topics in Networks",
+                    "pages": "132-138",
+                    "numpages": 7,
+                    "keywords": [
+                        "acknowledgment",
+                        "fake packet",
+                        "polite wifi",
+                        "privacy",
+                        "packet injection",
+                        "security",
+                        "wifi sensing",
+                        "threats"
+                    ],
+                    "series": "HotNets '20",
+                    "pdf": "../static/editor/pdf/3422604.3425951.pdf", 
+                    "tags": [
+                        "WiFi",
+                        "Sensing",
+                        "Security"
+                    ]
+                }
+            ]
+        }
+    ]
+}

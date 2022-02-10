@@ -32,3 +32,9 @@ If running Python 3.10, may need to use a virtual environment running Python 3.9
 5. click `choose file` to import a note from local machine
 6. You can rename the note at the textbox
 7. You can find all the notes in the `Note list` sidebar.
+
+
+# Phase 3 JSON Example
+- Please see [here](./editor/static/editor/json/note-list.json) for an example JSON file
+- @Owen, use this JSON file to generate the subtitle and info window for the note.
+- @Daisy, please try to fit it in you database framework. Let me know if there is any problem.
