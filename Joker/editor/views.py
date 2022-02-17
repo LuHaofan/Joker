@@ -4,6 +4,7 @@ import os
 import json
 from django.urls import reverse
 from numpy import inner
+from .models import Note, Paper, Tag, Author
 
 class NameTranslator():
     def __init__(self):
@@ -63,6 +64,7 @@ class NameTranslator():
 
 
 nt = NameTranslator()
+
 def index(request):
     generateNoteList()
     return render(request, 'editor/index.html', {})
@@ -257,3 +259,17 @@ def generateNote(fname):
         lines.append("> Tags: *Define your own tags here, separate by comma*")
         f.writelines(lines)
 
+def saveTag(request):
+    paper_data = json.loads(request.POST.get('paper_data'))
+    tag_name = request.POST.get('tag_name')
+    paper = Paper.nodes.get_or_none(title=paper_data["title"])
+    if paper is None:
+        paper = Paper(title=paper_data["title"], short_title=paper_data["short_title"])
+        paper.save()
+
+    tag = Tag.nodes.get_or_none(name=tag_name)
+    if tag is None:
+        tag = Tag(name=tag_name)
+        tag.save()
+    paper.tag.connect(tag)
+    return HttpResponse()

@@ -427,6 +427,37 @@
         });
     </script>
 
+    <label for="tag_name">Tag:</label>
+    <input type="text" id="tag_name" name="tag_name">
+    <br>
+    <button id="save-tag-btn">Save</button>
+
+    <script type="text/javascript">
+        $("#save-tag-btn").bind('click', function () {
+            const test_paper_data = {
+                "title": "Test Paper",
+                "short_title": "Test Pa..."
+            }
+
+            const tag_name = document.getElementById('tag_name').value
+            
+            $.ajax({
+                method: 'POST',
+                url: "{% url 'editor:save_tag' %}",
+                data: {
+                    "paper_data": JSON.stringify(test_paper_data),
+                    "tag_name": tag_name,
+                    "csrfmiddlewaretoken": $('input[name=csrfmiddlewaretoken]').val()
+                },
+                success: function () {
+                    alert('Tag saved');
+                    draw();
+                },
+            });
+
+        });
+    </script>
+
     <div id="viz"></div>
 
     <section class="ppt-section-main" style="height: 600px">
@@ -464,28 +495,27 @@
         popoto.runner.DRIVER = driver
 
         popoto.provider.node.Provider = {
-        "Paper": {
-            "returnAttributes": ["short_title"],
-            "constraintAttribute": "short_title"
-        },
-        "Author": {
-            "returnAttributes": ["name"],
-            "constraintAttribute": "name"
-        },
-        "Tag": {
-            "returnAttributes": ["name"],
-            "constraintAttribute": "name"
-        },
-        "Note": {
-            "returnAttributes": ["file_name"],
-            "constraintAttribute": "file_name"
-        },
-    };
+            "Paper": {
+                "returnAttributes": ["short_title"],
+                "constraintAttribute": "short_title"
+            },
+            "Author": {
+                "returnAttributes": ["name"],
+                "constraintAttribute": "name"
+            },
+            "Tag": {
+                "returnAttributes": ["name"],
+                "constraintAttribute": "name"
+            },
+            "Note": {
+                "returnAttributes": ["file_name"],
+                "constraintAttribute": "file_name"
+            },
+        };
 
         driver.verifyConnectivity().then(function () {
             popoto.start("Paper");
         }).catch(function (error) {
-            console.log("DSNFDN")
             console.error(error)
         })
     </script>
