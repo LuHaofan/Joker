@@ -1,0 +1,42 @@
+{
+    "authors": [
+        {
+            "first": "Souvik",
+            "last": "Sen"
+        },
+        {
+            "first": "Bo\\v{z}idar",
+            "last": "Radunovic"
+        },
+        {
+            "first": "Romit Roy",
+            "last": "Choudhury"
+        },
+        {
+            "first": "Tom",
+            "last": "Minka"
+        }
+    ],
+    "title": "You Are Facing the Mona Lisa: Spot Localization Using PHY Layer Information",
+    "year": "2012",
+    "isbn": "9781450313018",
+    "publisher": "Association for Computing Machinery",
+    "address": "New York, NY, USA",
+    "url": "https://doi.org/10.1145/2307636.2307654",
+    "doi": "10.1145/2307636.2307654",
+    "booktitle": "Proceedings of the 10th International Conference on Mobile Systems, Applications, and Services",
+    "numpages": "14",
+    "keywords": [
+        "wireless",
+        "localization",
+        "cross-layer",
+        "application"
+    ],
+    "location": "Low Wood Bay, Lake District, UK",
+    "series": "MobiSys '12",
+    "tags": [
+        "Localization",
+        "Sensing",
+        "Indoor Navigation"
+    ]
+}

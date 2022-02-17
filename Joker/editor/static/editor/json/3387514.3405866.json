@@ -1,0 +1,46 @@
+{
+    "authors": [
+        {
+            "first": "Ali",
+            "last": "Abedi"
+        },
+        {
+            "first": "Farzan",
+            "last": "Dehbashi"
+        },
+        {
+            "first": "Mohammad Hossein",
+            "last": "Mazaheri"
+        },
+        {
+            "first": "Omid",
+            "last": "Abari"
+        },
+        {
+            "first": "Tim",
+            "last": "Brecht"
+        }
+    ],
+    "title": "WiTAG: Seamless WiFi Backscatter Communication",
+    "year": "2020",
+    "isbn": "9781450379557",
+    "publisher": "Association for Computing Machinery",
+    "address": "New York, NY, USA",
+    "url": "https://doi.org/10.1145/3387514.3405866",
+    "doi": "10.1145/3387514.3405866",
+    "booktitle": "Proceedings of the Annual Conference of the ACM Special Interest Group on Data Communication on the Applications, Technologies, Architectures, and Protocols for Computer Communication",
+    "numpages": "13",
+    "keywords": [
+        "Sensors",
+        "802.11 Networks",
+        "Internet of Things (IoT)",
+        "Battery-free communication",
+        "WiFi Backscatter"
+    ],
+    "location": "Virtual Event, USA",
+    "series": "SIGCOMM '20",
+    "tags": [
+        "WiFi",
+        "Backscatter"
+    ]
+}
