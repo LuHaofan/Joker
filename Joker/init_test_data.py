@@ -18,7 +18,7 @@ f = open('test_data.json')
 data = json.load(f)
 
 for d in data:
-	paper = Paper(title=d["title"]).save()
+	paper = Paper(title=d["title"], short_title=d["short_title"]).save()
 	
 	for author_name in d["authors"]:
 		author = Author.nodes.get_or_none(name=author_name)
