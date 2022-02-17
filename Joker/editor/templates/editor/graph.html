@@ -1,0 +1,298 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Joker Note Editor</title>
+    <link rel="stylesheet" href="{% static 'editor/css/style.css' %}" />
+    <link rel="stylesheet" href="{% static 'editor/css/editormd.css' %}" />
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://unpkg.com/popoto/dist/popoto.min.css">
+
+    <style>
+        #note-title {
+            /* margin-left: 15%; */
+            height: 40px;
+            width: 100%;
+            font-size: 30px;
+            line-height: 40px;
+            border-width: 0;
+        }
+
+        #note-title:focus {
+            /* margin-left: 15%; */
+            height: 40px;
+            width: 100%;
+            font-size: 30px;
+            line-height: 40px;
+            border-width: 1px;
+        }
+
+        a,
+        a:hover,
+        a:focus,
+        a:active {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        #viz {
+            /*margin-left: 25%;*/
+            /*width: 75%;*/
+            height: 700px;
+            border-color: black;
+            border-style: solid;
+        }
+        .ppt-section-main {
+            /*margin-left: 25%;*/
+        }
+
+    </style>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="{% static 'editor/js/jquery.min.js' %}"></script>
+    <script src="{% static 'editor/js/editormd.js' %}"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+    <script src="https://cdn.neo4jlabs.com/neovis.js/v1.5.0/neovis.js"></script>
+    
+    <script src="https://unpkg.com/d3@5.15.0" charset="utf-8"></script>
+    <script src="https://unpkg.com/neo4j-driver-lite" charset="utf-8"></script>
+    <script src="https://unpkg.com/popoto/dist/popoto.js"></script>
+        
+    
+</head>
+<script>
+    function draw() {
+        var config = {
+            container_id: "viz",
+            // server_url: "bolt://localhost:7687",
+            server_url: "neo4j://44305d6f.databases.neo4j.io:7687",
+            server_user: "neo4j",
+            // server_password: "12345",
+            server_password: "9cRp7C_4p8ty1f_5XYlXorAtqM3OlksojlNGA9k7RlU",
+            arrows: true,
+            labels: {
+                "Paper": {
+                    caption: "short_title",
+                    font: {
+                        size: 18
+                    }
+                },
+                "Author": {
+                    caption: "name",
+                    font: {
+                        size: 18
+                    }
+                },
+                "Tag": {
+                    caption: "name",
+                    font: {
+                        size: 18
+                    },
+                    size: "count"
+                },
+                "Note": {
+                    caption: false,
+                    font: {
+                        size: 18
+                    }
+                }
+            },
+            relationships: {
+                "NOTE_FOR": {
+                    caption: true,
+                    thickness: "1"
+                },
+                "WRITTEN_BY": {
+                    caption: true,
+                    thickness: "1"
+                },
+                "IS_ABOUT": {
+                    caption: true,
+                    thickness: "1"
+                },
+            },
+            initial_cypher: "MATCH p=()-->() RETURN p"
+        }
+
+        var viz = new NeoVis.default(config);
+        viz.render();
+    }
+</script>
+<body onload="draw()">
+    {% csrf_token %}
+
+    <nav class="navbar navbar-inverse" style="margin-top: 0; margin-bottom: 0;">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">Joker</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li><a href="#">Home</a></li>
+                <li class="active"><a href="#">Editor</a></li>
+                <li><a href="#">Knowledge Graph</a></li>
+                <!-- <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span
+                            class="glyphicon glyphicon-remove"></span> ML
+                        <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">ML 1-1</a></li>
+                        <li><a href="#">ML 1-2</a></li>
+                        <li><a href="#">ML 1-3</a></li>
+                    </ul>
+                </li> -->
+            </ul>
+
+
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+                <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <button class="btn btn-success navbar-btn" data-toggle="modal" data-target="#mdModal">md</button>
+                <button class="btn btn-success navbar-btn" data-toggle="modal" data-target="#bibModal">bibtex</button>
+            </ul>
+            <form class="navbar-form navbar-right" action="/action_page.php">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search">
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" type="submit">
+                            <i class="glyphicon glyphicon-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </nav>
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb" style="margin-top: 0; margin-bottom: 0; text-align: left;">
+            <li class="breadcrumb-item"><a href="#"><span
+                class="glyphicon glyphicon-remove"></span> HCI</a></li>
+            <li class="breadcrumb-item"><a href="#"><span
+                class="glyphicon glyphicon-remove"></span> ML</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><span
+                class="glyphicon glyphicon-remove"></span> WiFi</li>
+        </ol>
+    </nav>
+    <!-- Modals -->
+    <div id="bibModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content" style="text-align: left;">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Import Bibtex</h4>
+                </div>
+                <div class="modal-body">
+                    <form action="{% url 'editor:bibtex_handler' %}" method="post">
+                        {% csrf_token %}
+                        <label for="bibtex">Citation in Bibtex Format:</label>
+                        <div class="form-group">
+                            <textarea class="form-control" rows="15" id="bibtex" name="bibtex"></textarea>
+                          </div>
+                        <!-- <input type="text" name="bib-text" id="bib-text"> -->
+                        <input type="submit" value="Submit", style="display: block;">
+                        <label for="import-btn">Upload PDF:</label>
+                        <input type='file' id="import-btn" name="import-btn">
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="mdModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Import Markdown</h4>
+                </div>
+                <div class="modal-body">
+                    <input type='file' id="import-btn">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Import</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="viz"></div>
+
+    <section class="ppt-section-main" style="height: 600px">
+
+        <!-- By default the graph is generated on the HTML element with ID "popoto-graph"
+         If needed this id can be modified with property "popoto.graph.containerId" -->
+
+         <nav id="popoto-taxonomy" class="ppt-taxo-nav">
+            <!-- Label/taxonomy filter will be generated here -->
+        </nav>
+
+        <div id="popoto-graph" class="ppt-div-graph">
+            <!-- Graph is generated here -->
+        </div>
+
+        <div id="popoto-cypher" class="ppt-container-cypher">
+            <!-- Cypher query viewer will be generated here -->
+        </div>
+
+        <div id="popoto-results" class="ppt-container-results">
+        <!-- Results will be generated here -->
+    </div>
+
+    </section>
+    
+    <script type="text/javascript">
+        // const neo4j = require('neo4j-driver')
+        const driver = neo4j.driver(
+            // "bolt://localhost:7687",
+            "neo4j+s://44305d6f.databases.neo4j.io:7687",
+            // neo4j.auth.basic("neo4j", "12345"),
+            neo4j.auth.basic("neo4j", "9cRp7C_4p8ty1f_5XYlXorAtqM3OlksojlNGA9k7RlU"),
+        );
+
+        popoto.runner.DRIVER = driver
+
+        popoto.provider.node.Provider = {
+            "Paper": {
+                "returnAttributes": ["short_title"],
+                "constraintAttribute": "short_title"
+            },
+            "Author": {
+                "returnAttributes": ["name"],
+                "constraintAttribute": "name"
+            },
+            "Tag": {
+                "returnAttributes": ["name"],
+                "constraintAttribute": "name"
+            },
+            "Note": {
+                "returnAttributes": ["file_name"],
+                "constraintAttribute": "file_name"
+            },
+        };
+
+        driver.verifyConnectivity().then(function () {
+            popoto.start("Paper");
+        }).catch(function (error) {
+            console.error(error)
+        })
+    </script>
+</body>
+
+</html>

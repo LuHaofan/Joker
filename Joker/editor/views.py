@@ -69,6 +69,9 @@ def index(request):
     generateNoteList()
     return render(request, 'editor/index.html', {})
 
+def graph(request):
+    return render(request, 'editor/graph.html', {})
+
 def generateNoteList():
     note_dir_root = "./editor/static/editor/notes/"
     res = {"notes":[]}
