@@ -1,3 +1,5 @@
+from neomodel import db
+
 from editor.models import Note
 from editor.models import Paper
 from editor.models import Tag
@@ -44,3 +46,18 @@ def updateGraph(d):
                 keyword = Keyword(name=keyword_name)
                 keyword.save()
             paper.keyword.connect(keyword)
+
+
+def recommend(title):
+    paper = Paper.nodes.get_or_none(title=title)
+    if paper is None:
+	    raise RuntimeError("Paper doesn't exist in DB")
+
+    recs = []
+    for keyword in paper.keyword:
+	    query = "MATCH (n:Keyword {name: '" + keyword.name + "'})<-[:CONTAINS_KEYWORD]-(paper) return paper.title"
+	    papers = db.cypher_query(query)[0]
+	    papers = [p for sublist in papers for p in sublist]
+	    papers = list(filter(lambda paper_title: paper_title != title, papers))
+	    recs += papers
+    return recs

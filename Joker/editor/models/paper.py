@@ -7,5 +7,5 @@ class Paper(StructuredNode):
 	numpages = IntegerProperty()
 	author = Relationship('.author.Author', 'WRITTEN_BY')
 	tag = RelationshipTo('.tag.Tag', 'IS_ABOUT')
-	keyword = RelationshipTo('.keyword.Keyword', 'CONTAINS_KEYWORDS')
+	keyword = RelationshipTo('.keyword.Keyword', 'CONTAINS_KEYWORD')
 	note = RelationshipFrom('.note.Note', 'NOTE_FOR')
