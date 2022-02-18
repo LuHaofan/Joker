@@ -4,7 +4,8 @@ import os
 import json
 from django.urls import reverse
 from numpy import inner
-# from .models import Note, Paper, Tag, Author
+from .models import Note, Paper, Tag, Author
+from . import util
 
 class NameTranslator():
     def __init__(self):
@@ -133,6 +134,7 @@ def saveNote(request):
     with open(jsonPath, 'r') as f:
         obj = json.load(f)
         obj["tags"] = tags
+        util.updateGraph(obj)
     with open(jsonPath, "w") as f:
         json.dump(obj, f)
 
@@ -258,6 +260,7 @@ def generateNote(fname):
     # Opening JSON file
     with open(jsonPath, "r") as f:
         data = json.load(f)
+        util.updateGraph(data)
 
     displayList = ["title", "year", "url", "series"]
     with open(notePath, "w") as f:
