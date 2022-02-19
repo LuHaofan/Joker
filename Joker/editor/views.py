@@ -4,7 +4,7 @@ import os
 import json
 from django.urls import reverse
 from numpy import inner
-from .models import Note, Paper, Tag, Author
+# from .models import Note, Paper, Tag, Author
 
 class NameTranslator():
     def __init__(self):
@@ -227,6 +227,8 @@ def parseBibtex(tex):
             d["numpages"] = parseLine(line)
         elif line.startswith("location"):
             d["location"] = parseLine(line)
+        elif line.startswith("abstract"):
+            d["abstract"] = parseLine(line)
 
     return d, title
 
@@ -314,3 +316,5 @@ def parseBibGroupFile(group_name):
                 print("done")
                 
 
+if __name__ == "__main__":
+    parseBibGroupFile("sigcomm")
