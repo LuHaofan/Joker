@@ -137,9 +137,9 @@
                 <a class="navbar-brand" href="#">Joker</a>
             </div>
             <ul class="nav navbar-nav">
-                <li><a href="#">Home</a></li>
-                <li class="active"><a href="#">Editor</a></li>
-                <li><a href="#">Knowledge Graph</a></li>
+                <li><a href="{% url 'editor:home' %}">Home</a></li>
+                <li><a href="{% url 'editor:index' %}">Editor</a></li>
+                <li class="active"><a href="#">Knowledge Graph</a></li>
                 <!-- <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span
                             class="glyphicon glyphicon-remove"></span> ML

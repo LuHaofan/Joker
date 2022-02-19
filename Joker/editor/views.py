@@ -41,8 +41,9 @@ class NameTranslator():
         update entry in the name translation database
         '''
         if innerName in self.json["i2d"].keys():
+            old_displayName = self.json["i2d"][innerName]
             self.json["i2d"][innerName] = displayName
-            self.json["d2i"][displayName] = innerName
+            self.json["d2i"][old_displayName] = innerName
             with open(self.ntdbPath, 'w') as f:
                 json.dump(self.json, f)
         else:
@@ -71,6 +72,9 @@ def index(request):
 
 def graph(request):
     return render(request, 'editor/graph.html', {})
+
+def home(request):
+    return render(request, 'editor/home.html', {})
 
 def generateNoteList():
     note_dir_root = "./editor/static/editor/notes/"
@@ -110,7 +114,7 @@ def getNoteHeader(md):
 def getTags(hdr):
     tagList = []
     for l in hdr:
-        if l.startswith("> Tags"):
+        if l.startswith("> Tags") and l.find("*") < 0:
             tagList += l[7:].strip().split(", ")
     return tagList
 
@@ -170,7 +174,6 @@ def bibtex_handler(request):
     lines = bibtex.split('\n')
     firstline = lines[0]
     fname = firstline[firstline.find("/")+1:firstline.find(",")]
-    nt.addEntry(fname, fname)   #by default the innerName and displayName should be the same
     fpath = bibDir+fname+'.bib'
     with open(fpath, 'w', encoding = 'utf-8') as f:
         f.write(bibtex)
@@ -182,55 +185,60 @@ def bibtex_handler(request):
 def parseLine(line):
     return line[line.find("{")+1:line.rfind("}")]
 
+def parseBibtex(tex):
+    d = {}
+    for i in range(len(tex)):
+        line = tex[i].strip().lstrip("\t")
+        if line.startswith("author"):
+            author_list = line[line.find("{")+1:line.rfind("}")].split('and')
+            author_list_item = []
+            for author in author_list:
+                if author.find(",") >= 0:
+                    comma = author.find(",")
+                    first = author[comma+2:].strip()
+                    last = author[:comma].strip()
+                    author_list_item.append({"first":first, "last": last})
+            # print(author_list_item)
+            d["authors"] = author_list_item
+        elif line.startswith("title"):
+            title = parseLine(line)
+            d["title"] = title
+        elif line.startswith("year"):
+            d["year"] = parseLine(line)
+        elif line.startswith("url"):
+            d["url"] = parseLine(line)
+        elif line.startswith("keywords"):
+            keywords_list = parseLine(line).split(", ")
+            d["keywords"] = keywords_list
+        elif line.startswith("isbn"):
+            isbn = parseLine(line)
+            d["isbn"] = isbn
+        elif line.startswith("publisher"):
+            d["publisher"] = parseLine(line)
+        elif line.startswith("series"):
+            d["series"] = parseLine(line)
+        elif line.startswith("address"):
+            d["address"] = parseLine(line)
+        elif line.startswith("doi"):
+            d["doi"] = parseLine(line)
+        elif line.startswith("booktitle"):
+            d["booktitle"] = parseLine(line)
+        elif line.startswith("numpages"):
+            d["numpages"] = parseLine(line)
+        elif line.startswith("location"):
+            d["location"] = parseLine(line)
+
+    return d, title
+
 def parseBibFile(fname):
-    bibDir = "editor/static/editor/bib/"
-    jsonDir = "editor/static/editor/json/"
+    bibDir = "./editor/static/editor/bib/"
+    jsonDir = "./editor/static/editor/json/"
     inputPath = bibDir+fname+".bib"
     outputPath = jsonDir+fname+".json"
-    d = {}
     with open(inputPath, 'r', encoding='utf-8') as f:
         raw = f.readlines()
-        for i in range(len(raw)):
-            line = raw[i].strip().lstrip("\t")
-            if line.startswith("author"):
-                author_list = line[line.find("{")+1:line.rfind("}")].split('and')
-                author_list_item = []
-                for author in author_list:
-                    if author.find(",") >= 0:
-                        comma = author.find(",")
-                        first = author[comma+2:].strip()
-                        last = author[:comma].strip()
-                        author_list_item.append({"first":first, "last": last})
-                    # else:
-                    #     author_list_item.append(author.strip())
-                print(author_list_item)
-                d["authors"] = author_list_item
-            elif line.startswith("title"):
-                d["title"] = parseLine(line)
-            elif line.startswith("year"):
-                d["year"] = parseLine(line)
-            elif line.startswith("url"):
-                d["url"] = parseLine(line)
-            elif line.startswith("keywords"):
-                keywords_list = parseLine(line).split(", ")
-                d["keywords"] = keywords_list
-            elif line.startswith("isbn"):
-                isbn = parseLine(line)
-                d["isbn"] = isbn
-            elif line.startswith("publisher"):
-                d["publisher"] = parseLine(line)
-            elif line.startswith("series"):
-                d["series"] = parseLine(line)
-            elif line.startswith("address"):
-                d["address"] = parseLine(line)
-            elif line.startswith("doi"):
-                d["doi"] = parseLine(line)
-            elif line.startswith("booktitle"):
-                d["booktitle"] = parseLine(line)
-            elif line.startswith("numpages"):
-                d["numpages"] = parseLine(line)
-            elif line.startswith("location"):
-                d["location"] = parseLine(line)
+        d, title = parseBibtex(raw)
+        nt.addEntry(fname, title)   #by default the innerName and displayName should be the same
     with open(outputPath, 'w') as f:
         json.dump(d, f)
 
@@ -243,22 +251,24 @@ def formatAuthorList(al):
 def generateNote(fname):
     noteDir = "./editor/static/editor/notes/"
     notePath = noteDir+fname+".md"
-    jsonDir = "editor/static/editor/json/"
+    jsonDir = "./editor/static/editor/json/"
     jsonPath = jsonDir+fname+".json"
     # Opening JSON file
-    f = open(jsonPath)
-    data = json.load(f)
-    f.close()
-    displayList = ["title", "authors", "year", "url", "keywords", "series"]
+    with open(jsonPath, "r") as f:
+        data = json.load(f)
+
+    displayList = ["title", "year", "url", "series"]
     with open(notePath, "w") as f:
         lines = []
-        for k in displayList:
+        for k in data.keys():
             if k == "authors":
                 lines.append("> "+k.capitalize()+": "+ formatAuthorList(data[k]) + "\n")
             elif k == "keywords":
                 lines.append("> "+k.capitalize()+": "+ ", ".join(data[k])+ "\n")
-            else:
+            elif k in displayList:
                 lines.append("> "+k.capitalize()+": "+ data[k]+ "\n")
+            else:
+                continue
         lines.append("> Tags: *Define your own tags here, separate by comma*")
         f.writelines(lines)
 
@@ -276,3 +286,31 @@ def saveTag(request):
         tag.save()
     paper.tag.connect(tag)
     return HttpResponse()
+
+def parseBibGroupFile(group_name):
+    groupDir = "./editor/static/editor/dataset/"
+    groupPath = groupDir+group_name+".bib"
+    jsonDir = "./editor/static/editor/json/"
+
+    with open(groupPath, "r") as f:
+        raw = f.read()
+        bib_list = raw.split("\n\n")
+        for bib in bib_list:
+            bib_lines = bib.split("\n")
+            firstline = bib_lines[0]
+            fname = firstline[firstline.find("/")+1:firstline.find(",")]
+            try:
+                d, title = parseBibtex(bib_lines)
+                print(fname)
+                print(d)
+                print(title)
+                print("\n")
+                nt.addEntry(fname, title)   #by default the innerName and displayName should be the same
+
+                with open(jsonDir+fname+".json", 'w') as f:
+                    json.dump(d, f)
+                generateNote(fname)
+            except:
+                print("done")
+                
+
