@@ -318,6 +318,11 @@ def parseBibGroupFile(group_name):
             except:
                 print("done")
                 
+def getRecs(request):
+    title = request.GET.get('title')
+    recs = util.recommend(title[:-1])
+    return HttpResponse(json.dumps(recs))
+    # return recs
 
 if __name__ == "__main__":
     parseBibGroupFile("sigcomm")

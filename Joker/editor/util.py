@@ -53,11 +53,12 @@ def recommend(title):
     if paper is None:
 	    raise RuntimeError("Paper doesn't exist in DB")
 
-    recs = []
+    recs = {}
     for keyword in paper.keyword:
-	    query = "MATCH (n:Keyword {name: '" + keyword.name + "'})<-[:CONTAINS_KEYWORD]-(paper) return paper.title"
-	    papers = db.cypher_query(query)[0]
-	    papers = [p for sublist in papers for p in sublist]
-	    papers = list(filter(lambda paper_title: paper_title != title, papers))
-	    recs += papers
+        query = "MATCH (n:Keyword {name: '" + keyword.name + "'})<-[:CONTAINS_KEYWORD]-(paper) return paper.title"
+        papers = db.cypher_query(query)[0]
+        papers = [p for sublist in papers for p in sublist]
+        papers = list(filter(lambda paper_title: paper_title != title, papers))
+        if len(papers) > 0:
+            recs[keyword.name] = papers
     return recs

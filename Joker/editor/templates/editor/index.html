@@ -60,80 +60,24 @@
             text-overflow: ellipsis;
         }
 
+        #note_list {
+            overflow-y: scroll;
+            height: 100vh;
+        }
+
     </style>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="{% static 'editor/js/jquery.min.js' %}"></script>
     <script src="{% static 'editor/js/editormd.js' %}"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-
-    <script src="https://cdn.neo4jlabs.com/neovis.js/v1.5.0/neovis.js"></script>
     
     <script src="https://unpkg.com/d3@5.15.0" charset="utf-8"></script>
     <script src="https://unpkg.com/neo4j-driver-lite" charset="utf-8"></script>
-    <script src="https://unpkg.com/popoto/dist/popoto.js"></script>
         
     
 </head>
-<script>
-    function draw() {
-        var config = {
-            container_id: "viz",
-            // server_url: "bolt://localhost:7687",
-            server_url: "neo4j://44305d6f.databases.neo4j.io:7687",
-            server_user: "neo4j",
-            // server_password: "12345",
-            server_password: "9cRp7C_4p8ty1f_5XYlXorAtqM3OlksojlNGA9k7RlU",
-            arrows: true,
-            labels: {
-                "Paper": {
-                    caption: "short_title",
-                    font: {
-                        size: 18
-                    }
-                },
-                "Author": {
-                    caption: "name",
-                    font: {
-                        size: 18
-                    }
-                },
-                "Tag": {
-                    caption: "name",
-                    font: {
-                        size: 18
-                    },
-                    size: "count"
-                },
-                "Note": {
-                    caption: false,
-                    font: {
-                        size: 18
-                    }
-                }
-            },
-            relationships: {
-                "NOTE_FOR": {
-                    caption: true,
-                    thickness: "1"
-                },
-                "WRITTEN_BY": {
-                    caption: true,
-                    thickness: "1"
-                },
-                "IS_ABOUT": {
-                    caption: true,
-                    thickness: "1"
-                },
-            },
-            initial_cypher: "MATCH p=()-->() RETURN p"
-        }
-
-        var viz = new NeoVis.default(config);
-        viz.render();
-    }
-</script>
-<body onload="draw()">
+<body>
     {% csrf_token %}
 
     <nav class="navbar navbar-inverse" style="margin-top: 0; margin-bottom: 0;">
@@ -314,6 +258,9 @@
                     }
                 });
             });
+
+            var noteIdxs = {}
+
             /* note-list.json is loaded here */
             function load_note_list() {
                 $("#note_list ul").empty();
@@ -322,6 +269,7 @@
                     for (var i = 0; i < json.notes.length; i++) {
                         console.log(i);
                         $("#note_list ul").append('<li><a href="#">' + json.notes[i].title + '</a></li>');
+                        noteIdxs[json.notes[i].title] = i
                     }
                     $('#note_list a').addClass("w3-bar-item w3-button");
                     $('#note_list ul').children().click(function () {
@@ -331,6 +279,7 @@
                         $.get(path, function (md) {
                             $("#note-title").val(title);
                             testEditor.load_note(md);
+                            loadRecs(md);
                         });
                     });
                 });
@@ -339,6 +288,79 @@
             function load_default() {
                 $("#note-title").val("");
                 testEditor.clear();
+            }
+
+            function saveNote(showAlert=true) {
+                console.log($("#note-title").val())
+                if ($("#note-title").val() == "") {
+                    alert("Please give your note a title");
+                    return false
+                } else {
+                    $.ajax({
+                        method: 'POST',
+                        url: "{% url 'editor:save_note' %}",
+                        data: {
+                            md: testEditor.getMarkdown(),
+                            fname: $("#note-title").val(),
+                            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                        },
+                        success: function () {
+                            // load_default();
+                            if (showAlert) {
+                                alert('Note saved');
+                            }
+                            load_note_list();
+                        },
+                    });
+                    return true
+                }
+            }
+
+            function loadRelatedNote(title) {
+                if (saveNote(showAlert=false)) {
+                    $.get("{% static 'editor/json/note-list.json' %}", function (json) {
+                        var path = json.notes[noteIdxs[title]].path;
+                        $.get(path, function (md) {
+                            $("#note-title").val(title);
+                            testEditor.load_note(md);
+                            loadRecs(md);
+                        });
+                    });
+                }
+            }
+
+            function loadRecs(md) {
+                $("#recommendations").empty();
+
+                title = md.split('\n')[1]
+                if (!title.startsWith("> Title: ")) {
+                    title = md.split('\n')[0]
+                }
+                title = title.replace("> Title: ", "")
+                $.ajax({
+                    method: 'GET',
+                    url: "{% url 'editor:get_recs' %}",
+                    data: {
+                        "title": title
+                    },
+                    success: function (recs) {
+                        recs = JSON.parse(recs)
+                        for (var keyword in recs) {
+                            const listId = "list-" + keyword.replace(" ", "-")
+                            $("#recommendations").append("<b>" + keyword + "</b>")
+                            $("#recommendations").append("<ul id=" + listId + "></ul>")
+                            for (var i = 0; i < recs[keyword].length; i++) {
+                                const itemId = keyword.replace(" ", "-") + "-" + i.toString();
+                                $("#" + listId)
+                                    .append('<li id=' + itemId + '><a href="#">' + recs[keyword][i] + '</a></li>');
+                                $("#" + itemId + " a").click(function() {
+                                    const recTitle = $("#" + itemId + " a").html()
+                                    loadRelatedNote(recTitle)
+                                });
+                            }
+                        }
+                    },
+                });
             }
 
 
@@ -371,26 +393,7 @@
             });
 
             $("#save-btn").bind('click', function () {
-                console.log($("#note-title").val())
-                if ($("#note-title").val() == "") {
-                    alert("Please give your note a title");
-                } else {
-                    $.ajax({
-                        method: 'POST',
-                        url: "{% url 'editor:save_note' %}",
-                        data: {
-                            md: testEditor.getMarkdown(),
-                            fname: $("#note-title").val(),
-                            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
-                        },
-                        success: function () {
-                            load_default();
-                            alert('Note saved');
-                            load_note_list();
-                        },
-                    });
-                }
-
+                saveNote()
             });
 
             $("#import-btn").bind('click', function () {
@@ -432,7 +435,7 @@
         });
     </script>
 
-    <label for="tag_name">Tag:</label>
+    <!-- <label for="tag_name">Tag:</label>
     <input type="text" id="tag_name" name="tag_name">
     <br>
     <button id="save-tag-btn">Save</button>
@@ -461,69 +464,12 @@
             });
 
         });
-    </script>
+    </script> -->
 
-    <div id="viz"></div>
-
-    <section class="ppt-section-main" style="height: 600px">
-
-        <!-- By default the graph is generated on the HTML element with ID "popoto-graph"
-         If needed this id can be modified with property "popoto.graph.containerId" -->
-
-         <nav id="popoto-taxonomy" class="ppt-taxo-nav">
-            <!-- Label/taxonomy filter will be generated here -->
-        </nav>
-
-        <div id="popoto-graph" class="ppt-div-graph">
-            <!-- Graph is generated here -->
-        </div>
-
-        <div id="popoto-cypher" class="ppt-container-cypher">
-            <!-- Cypher query viewer will be generated here -->
-        </div>
-
-        <div id="popoto-results" class="ppt-container-results">
-        <!-- Results will be generated here -->
+    <h4>Paper Recommendations</h4>
+    <div id="recommendations">
     </div>
-
-    </section>
     
-    <script type="text/javascript">
-        // const neo4j = require('neo4j-driver')
-        const driver = neo4j.driver(
-            // "bolt://localhost:7687",
-            "neo4j+s://44305d6f.databases.neo4j.io:7687",
-            // neo4j.auth.basic("neo4j", "12345"),
-            neo4j.auth.basic("neo4j", "9cRp7C_4p8ty1f_5XYlXorAtqM3OlksojlNGA9k7RlU"),
-        );
-
-        popoto.runner.DRIVER = driver
-
-        popoto.provider.node.Provider = {
-            "Paper": {
-                "returnAttributes": ["short_title"],
-                "constraintAttribute": "short_title"
-            },
-            "Author": {
-                "returnAttributes": ["name"],
-                "constraintAttribute": "name"
-            },
-            "Tag": {
-                "returnAttributes": ["name"],
-                "constraintAttribute": "name"
-            },
-            "Note": {
-                "returnAttributes": ["file_name"],
-                "constraintAttribute": "file_name"
-            },
-        };
-
-        driver.verifyConnectivity().then(function () {
-            popoto.start("Paper");
-        }).catch(function (error) {
-            console.error(error)
-        })
-    </script>
 </body>
 
 </html>

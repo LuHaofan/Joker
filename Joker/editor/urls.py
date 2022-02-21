@@ -10,5 +10,6 @@ urlpatterns = [
     path('save_note/', views.saveNote, name = 'save_note'),
     path('delete_note/', views.deleteNote, name = 'delete_note'),
     path('bibtex_handler/', views.bibtex_handler, name = 'bibtex_handler'),
-    path('save_tag/', views.saveTag, name = 'save_tag')
+    path('save_tag/', views.saveTag, name = 'save_tag'),
+    path('get_recs/', views.getRecs, name = 'get_recs')
 ]
