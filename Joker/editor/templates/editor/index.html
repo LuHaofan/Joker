@@ -60,12 +60,22 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
+<<<<<<< HEAD
+=======
+
+        #note_list {
+            overflow-y: scroll;
+            height: 100vh;
+        }
+
+>>>>>>> 921737fc8d1af61e9c695a23cd0dcd0a69ee7722
     </style>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="{% static 'editor/js/jquery.min.js' %}"></script>
     <script src="{% static 'editor/js/editormd.js' %}"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<<<<<<< HEAD
 
     <script src="https://cdn.neo4jlabs.com/neovis.js/v1.5.0/neovis.js"></script>
 
@@ -135,6 +145,15 @@
 </script>
 
 <body onload="draw()">
+=======
+    
+    <script src="https://unpkg.com/d3@5.15.0" charset="utf-8"></script>
+    <script src="https://unpkg.com/neo4j-driver-lite" charset="utf-8"></script>
+        
+    
+</head>
+<body>
+>>>>>>> 921737fc8d1af61e9c695a23cd0dcd0a69ee7722
     {% csrf_token %}
 
     <nav class="navbar navbar-inverse" style="margin-top: 0; margin-bottom: 0;">
@@ -391,6 +410,9 @@
                     }
                 });
             });
+
+            var noteIdxs = {}
+
             /* note-list.json is loaded here */
             function load_note_list() {
                 $("#note_list ul").empty();
@@ -399,6 +421,7 @@
                     for (var i = 0; i < json.notes.length; i++) {
                         console.log(i);
                         $("#note_list ul").append('<li><a href="#">' + json.notes[i].title + '</a></li>');
+                        noteIdxs[json.notes[i].title] = i
                     }
                     $('#note_list a').addClass("w3-bar-item w3-button");
                     $('#note_list ul').children().click(function () {
@@ -408,6 +431,7 @@
                         $.get(path, function (md) {
                             $("#note-title").val(title);
                             testEditor.load_note(md);
+                            loadRecs(md);
                         });
                     });
                 });
@@ -416,6 +440,79 @@
             function load_default() {
                 $("#note-title").val("");
                 testEditor.clear();
+            }
+
+            function saveNote(showAlert=true) {
+                console.log($("#note-title").val())
+                if ($("#note-title").val() == "") {
+                    alert("Please give your note a title");
+                    return false
+                } else {
+                    $.ajax({
+                        method: 'POST',
+                        url: "{% url 'editor:save_note' %}",
+                        data: {
+                            md: testEditor.getMarkdown(),
+                            fname: $("#note-title").val(),
+                            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                        },
+                        success: function () {
+                            // load_default();
+                            if (showAlert) {
+                                alert('Note saved');
+                            }
+                            load_note_list();
+                        },
+                    });
+                    return true
+                }
+            }
+
+            function loadRelatedNote(title) {
+                if (saveNote(showAlert=false)) {
+                    $.get("{% static 'editor/json/note-list.json' %}", function (json) {
+                        var path = json.notes[noteIdxs[title]].path;
+                        $.get(path, function (md) {
+                            $("#note-title").val(title);
+                            testEditor.load_note(md);
+                            loadRecs(md);
+                        });
+                    });
+                }
+            }
+
+            function loadRecs(md) {
+                $("#recommendations").empty();
+
+                title = md.split('\n')[1]
+                if (!title.startsWith("> Title: ")) {
+                    title = md.split('\n')[0]
+                }
+                title = title.replace("> Title: ", "")
+                $.ajax({
+                    method: 'GET',
+                    url: "{% url 'editor:get_recs' %}",
+                    data: {
+                        "title": title
+                    },
+                    success: function (recs) {
+                        recs = JSON.parse(recs)
+                        for (var keyword in recs) {
+                            const listId = "list-" + keyword.replace(" ", "-")
+                            $("#recommendations").append("<b>" + keyword + "</b>")
+                            $("#recommendations").append("<ul id=" + listId + "></ul>")
+                            for (var i = 0; i < recs[keyword].length; i++) {
+                                const itemId = keyword.replace(" ", "-") + "-" + i.toString();
+                                $("#" + listId)
+                                    .append('<li id=' + itemId + '><a href="#">' + recs[keyword][i] + '</a></li>');
+                                $("#" + itemId + " a").click(function() {
+                                    const recTitle = $("#" + itemId + " a").html()
+                                    loadRelatedNote(recTitle)
+                                });
+                            }
+                        }
+                    },
+                });
             }
 
 
@@ -448,26 +545,7 @@
             });
 
             $("#save-btn").bind('click', function () {
-                console.log($("#note-title").val())
-                if ($("#note-title").val() == "") {
-                    alert("Please give your note a title");
-                } else {
-                    $.ajax({
-                        method: 'POST',
-                        url: "{% url 'editor:save_note' %}",
-                        data: {
-                            md: testEditor.getMarkdown(),
-                            fname: $("#note-title").val(),
-                            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
-                        },
-                        success: function () {
-                            load_default();
-                            alert('Note saved');
-                            load_note_list();
-                        },
-                    });
-                }
-
+                saveNote()
             });
 
             $("#import-btn").bind('click', function () {
@@ -509,6 +587,41 @@
         });
     </script>
 
+    <label for="tag_name">Tag:</label>
+    <input type="text" id="tag_name" name="tag_name">
+    <br>
+    <button id="save-tag-btn">Save</button>
+
+    <script type="text/javascript">
+        $("#save-tag-btn").bind('click', function () {
+            const test_paper_data = {
+                "title": "Test Paper",
+                "short_title": "Test Pa..."
+            }
+
+            const tag_name = document.getElementById('tag_name').value
+            
+            $.ajax({
+                method: 'POST',
+                url: "{% url 'editor:save_tag' %}",
+                data: {
+                    "paper_data": JSON.stringify(test_paper_data),
+                    "tag_name": tag_name,
+                    "csrfmiddlewaretoken": $('input[name=csrfmiddlewaretoken]').val()
+                },
+                success: function () {
+                    alert('Tag saved');
+                    draw();
+                },
+            });
+
+        });
+    </script> 
+
+    <h4>Paper Recommendations</h4>
+    <div id="recommendations">
+    </div>
+    
 </body>
 
 </html>
