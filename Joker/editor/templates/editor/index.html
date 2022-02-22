@@ -51,6 +51,7 @@
             border-color: black;
             border-style: solid;
         }
+
         .ppt-section-main {
             margin-left: 25%;
         }
@@ -59,7 +60,6 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-
     </style>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
@@ -68,12 +68,12 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 
     <script src="https://cdn.neo4jlabs.com/neovis.js/v1.5.0/neovis.js"></script>
-    
+
     <script src="https://unpkg.com/d3@5.15.0" charset="utf-8"></script>
     <script src="https://unpkg.com/neo4j-driver-lite" charset="utf-8"></script>
     <script src="https://unpkg.com/popoto/dist/popoto.js"></script>
-        
-    
+
+
 </head>
 <script>
     function draw() {
@@ -133,6 +133,7 @@
         viz.render();
     }
 </script>
+
 <body onload="draw()">
     {% csrf_token %}
 
@@ -181,12 +182,10 @@
     <!-- Breadcrumb -->
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb" style="margin-top: 0; margin-bottom: 0; text-align: left;">
-            <li class="breadcrumb-item"><a href="#"><span
-                class="glyphicon glyphicon-remove"></span> HCI</a></li>
-            <li class="breadcrumb-item"><a href="#"><span
-                class="glyphicon glyphicon-remove"></span> ML</a></li>
-            <li class="breadcrumb-item active" aria-current="page"><span
-                class="glyphicon glyphicon-remove"></span> WiFi</li>
+            <li class="breadcrumb-item"><a href="#"><span class="glyphicon glyphicon-remove"></span> HCI</a></li>
+            <li class="breadcrumb-item"><a href="#"><span class="glyphicon glyphicon-remove"></span> ML</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><span class="glyphicon glyphicon-remove"></span> WiFi
+            </li>
         </ol>
     </nav>
     <!-- Modals -->
@@ -205,9 +204,9 @@
                         <label for="bibtex">Citation in Bibtex Format:</label>
                         <div class="form-group">
                             <textarea class="form-control" rows="15" id="bibtex" name="bibtex"></textarea>
-                          </div>
+                        </div>
                         <!-- <input type="text" name="bib-text" id="bib-text"> -->
-                        <input type="submit" value="Submit", style="display: block;">
+                        <input type="submit" value="Submit" , style="display: block;">
                         <label for="import-btn">Upload PDF:</label>
                         <input type='file' id="import-btn" name="import-btn">
                     </form>
@@ -239,10 +238,12 @@
 
     <div class="container-fluid text-center">
         <div class="row content">
-            <div class="col-sm-1 sidenav" id="note_list">
-                <ul></ul>
+            <div class="col-sm-2 sidenav" style="height: 100vh; overflow: scroll;">
+                <div id="note_list">
+                    <ul></ul>
+                </div>
             </div>
-            <div id="layout" class="col-sm-7"  style="height: 100vh; overflow: auto;">
+            <div id="layout" class="col-sm-6" style="height: 100vh; overflow: auto;">
                 <input type="text" name="note-title" id="note-title" value="" placeholder="Note Title">
                 <div class="btns">
                     <button id="new-btn">New</button>
@@ -255,12 +256,88 @@
                 <div id="test-editormd"></div>
             </div>
             <div class="col-sm-4 sidenav">
-                <iframe src="{% static 'editor/pdf/test.pdf' %}" width="100%" height="100%" style="height: 100vh;overflow: auto;">
+                <iframe src="{% static 'editor/pdf/test.pdf' %}" width="100%" height="100%"
+                    style="height: 100vh;overflow: auto;">
                 </iframe>
             </div>
         </div>
     </div>
+    <div class="jumbotron" style="text-align: left;">
+        <h1>Explore</h1>
+        <p>Given the tags assigned to this paper, we recommend following related papers for you</p>
+    </div>
+    <div class="panel-wrapper" style="text-align: left;">
+        <div class="panel panel-default">
+            <!-- Default panel contents -->
+            <div class="panel-heading">Papers in you database</div>
+            <div class="panel-body">
+                <p>We recommend you to review the following papers. They seem to be relevant to this paper</p>
+            </div>
 
+            <!-- Table -->
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Authors</th>
+                        <th>URL</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>John</td>
+                        <td>Doe</td>
+                        <td>john@example.com</td>
+                    </tr>
+                    <tr>
+                        <td>Mary</td>
+                        <td>Moe</td>
+                        <td>mary@example.com</td>
+                    </tr>
+                    <tr>
+                        <td>July</td>
+                        <td>Dooley</td>
+                        <td>july@example.com</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="panel panel-default">
+            <!-- Default panel contents -->
+            <div class="panel-heading">Papers from Internet</div>
+            <div class="panel-body">
+                <p>You might also be interested in the following papers. They seem to be related...</p>
+            </div>
+
+            <!-- Table -->
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Authors</th>
+                        <th>URL</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>John</td>
+                        <td>Doe</td>
+                        <td>john@example.com</td>
+                    </tr>
+                    <tr>
+                        <td>Mary</td>
+                        <td>Moe</td>
+                        <td>mary@example.com</td>
+                    </tr>
+                    <tr>
+                        <td>July</td>
+                        <td>Dooley</td>
+                        <td>july@example.com</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
     <footer class="container-fluid text-center">
         <p>Copyright &copy; 2022 | Team Members: Haofan Lu, Daisy Zheng, Owen Li</p>
     </footer>
@@ -285,7 +362,7 @@
                     searchReplace: true,
                     //watch : false,                // 关闭实时预览
                     htmlDecode: "style,script,iframe|on*",            // 开启 HTML 标签解析，为了安全性，默认不开启    
-                    // toolbar  : false,             //关闭工具栏
+                    toolbar: false,             //关闭工具栏
                     //previewCodeHighlight : false, // 关闭预览 HTML 的代码块高亮，默认开启
                     emoji: true,
                     taskList: true,
@@ -432,98 +509,6 @@
         });
     </script>
 
-    <label for="tag_name">Tag:</label>
-    <input type="text" id="tag_name" name="tag_name">
-    <br>
-    <button id="save-tag-btn">Save</button>
-
-    <script type="text/javascript">
-        $("#save-tag-btn").bind('click', function () {
-            const test_paper_data = {
-                "title": "Test Paper",
-                "short_title": "Test Pa..."
-            }
-
-            const tag_name = document.getElementById('tag_name').value
-            
-            $.ajax({
-                method: 'POST',
-                url: "{% url 'editor:save_tag' %}",
-                data: {
-                    "paper_data": JSON.stringify(test_paper_data),
-                    "tag_name": tag_name,
-                    "csrfmiddlewaretoken": $('input[name=csrfmiddlewaretoken]').val()
-                },
-                success: function () {
-                    alert('Tag saved');
-                    draw();
-                },
-            });
-
-        });
-    </script>
-
-    <div id="viz"></div>
-
-    <section class="ppt-section-main" style="height: 600px">
-
-        <!-- By default the graph is generated on the HTML element with ID "popoto-graph"
-         If needed this id can be modified with property "popoto.graph.containerId" -->
-
-         <nav id="popoto-taxonomy" class="ppt-taxo-nav">
-            <!-- Label/taxonomy filter will be generated here -->
-        </nav>
-
-        <div id="popoto-graph" class="ppt-div-graph">
-            <!-- Graph is generated here -->
-        </div>
-
-        <div id="popoto-cypher" class="ppt-container-cypher">
-            <!-- Cypher query viewer will be generated here -->
-        </div>
-
-        <div id="popoto-results" class="ppt-container-results">
-        <!-- Results will be generated here -->
-    </div>
-
-    </section>
-    
-    <script type="text/javascript">
-        // const neo4j = require('neo4j-driver')
-        const driver = neo4j.driver(
-            // "bolt://localhost:7687",
-            "neo4j+s://44305d6f.databases.neo4j.io:7687",
-            // neo4j.auth.basic("neo4j", "12345"),
-            neo4j.auth.basic("neo4j", "9cRp7C_4p8ty1f_5XYlXorAtqM3OlksojlNGA9k7RlU"),
-        );
-
-        popoto.runner.DRIVER = driver
-
-        popoto.provider.node.Provider = {
-            "Paper": {
-                "returnAttributes": ["short_title"],
-                "constraintAttribute": "short_title"
-            },
-            "Author": {
-                "returnAttributes": ["name"],
-                "constraintAttribute": "name"
-            },
-            "Tag": {
-                "returnAttributes": ["name"],
-                "constraintAttribute": "name"
-            },
-            "Note": {
-                "returnAttributes": ["file_name"],
-                "constraintAttribute": "file_name"
-            },
-        };
-
-        driver.verifyConnectivity().then(function () {
-            popoto.start("Paper");
-        }).catch(function (error) {
-            console.error(error)
-        })
-    </script>
 </body>
 
 </html>
