@@ -138,7 +138,7 @@ def bibtex_handler(request):
 def querySemanticScholar(request):
     url = request.GET['url']
     print(url)
-    response = requests.get(url)
+    response = requests.get(url+"&offset=1&limit=5&fields=title,authors")
     with open("editor/static/editor/json/query.json", 'w') as f:
         json.dump(response.json(), f)
     return HttpResponse()

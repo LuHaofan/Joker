@@ -377,7 +377,7 @@
                     </tbody>
                 </table>
             </div>
-            <div class="panel panel-default">
+            <div class="panel panel-default" id = "paper-outside">
                 <!-- Default panel contents -->
                 <div class="panel-heading">Papers from Internet</div>
                 <div class="panel-body">
@@ -390,25 +390,9 @@
                         <tr>
                             <th>Title</th>
                             <th>Authors</th>
-                            <th>URL</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>John</td>
-                            <td>Doe</td>
-                            <td>john@example.com</td>
-                        </tr>
-                        <tr>
-                            <td>Mary</td>
-                            <td>Moe</td>
-                            <td>mary@example.com</td>
-                        </tr>
-                        <tr>
-                            <td>July</td>
-                            <td>Dooley</td>
-                            <td>july@example.com</td>
-                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -480,7 +464,22 @@
                             url: api+tag_list,
                             csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
                         },
-                        success: function () {alert("Success!")},
+                        success: function () {
+                            $.get("{% static 'editor/json/query.json' %}", function (json){
+                                console.log(json);
+                                for (let i = 0; i < json.data.length; i++) {
+                                    const element = json.data[i];
+                                    var title = element.title;
+                                    var authors = element.authors;
+                                    var authors_list = "";
+                                    for (let j = 0; j < authors.length; j++) {
+                                        const author = authors[j];
+                                        authors_list = authors_list + author.name + ", ";
+                                    }
+                                    $("#paper-outside table tbody").append("<tr><td>"+title+"</td><td>"+authors_list+"</td></tr>");
+                                }
+                            })
+                        },
                     });
                 }
                 /* note-list.json is loaded here */
