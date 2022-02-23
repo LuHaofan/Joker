@@ -497,8 +497,9 @@
                             var path = json.notes[$(this).index()].path;
                             var title = json.notes[$(this).index()].title;
                             var tentative_tags = json.notes[$(this).index()].papers[0].tags;
-                            for (let index = 0; index < tentative_tags.length; index++) {
-                                $(".dropdown ul").append("<li><a href='#'>" + tentative_tags[index] + "</a></li>");
+                            $(".dropdown ul").empty();
+                            for (let i = 0; i < tentative_tags.length; i++) {
+                                $(".dropdown ul").append("<li><a href='#'>" + tentative_tags[i] + "</a></li>");
                             }
                             $(".dropdown-menu li a").click(function () {
                                 tag_list = tag_list + $(this).text() + "+";

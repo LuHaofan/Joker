@@ -16,9 +16,9 @@ class BibParser():
         with open(inputPath, 'r', encoding='utf-8') as f:
             raw = f.readlines()
             d, title = self.parseBibtex(raw)
-            self.nt.addEntry(self.fname, title)   #by default the innerName and displayName should be the same
         with open(outputPath, 'w') as f:
             json.dump(d, f)
+        return title
 
     def parseLine(self, line):
         return line[line.find("{")+1:line.rfind("}")]

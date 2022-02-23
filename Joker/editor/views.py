@@ -30,12 +30,12 @@ def generateNoteList():
         for name in files:
             if name == "empty.md":
                 continue
-            title = name[:-3]
+            fname = name[:-3]
             path = os.path.join(note_root,name)
-            jsonPath = "editor/static/editor/json/"+title+".json"
+            jsonPath = "editor/static/editor/json/"+fname+".json"
             f = open(jsonPath)
             res["notes"].append({
-                "title": nt.i2d(title),
+                "title": nt.i2d(fname),
                 "path" : path,
                 "papers": [json.load(f)]
             })
@@ -129,16 +129,15 @@ def bibtex_handler(request):
         f.write(bibtex)
 
     bibparser = BibParser.BibParser(fname=fname)
-    bibparser.parseBibFile()
+    title = bibparser.parseBibFile()
+    nt.addEntry(fname, title)
     bibparser.generateNote()
-    # parseBibFile(fname)
-    # generateNote(fname)
     return HttpResponseRedirect(reverse('editor:index'))
 
 def querySemanticScholar(request):
     url = request.GET['url']
     print(url)
-    response = requests.get(url+"&offset=1&limit=5&fields=title,authors")
+    response = requests.get(url+"&offset=10&limit=5&fields=title,authors")
     with open("editor/static/editor/json/query.json", 'w') as f:
         json.dump(response.json(), f)
     return HttpResponse()

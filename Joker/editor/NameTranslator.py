@@ -30,6 +30,7 @@ class NameTranslator():
         self.json["d2i"][displayName] = innerName
         with open(self.ntdbPath, 'w') as f:
             json.dump(self.json, f)
+        print("Entry added to database", innerName, displayName);
 
     def updateEntry(self, innerName, displayName):
         '''
@@ -57,3 +58,7 @@ class NameTranslator():
         self.json["d2i"] = {}
         with open(self.ntdbPath, 'w') as f:
             json.dump(self.json, f)
+
+if __name__ == "__main__":
+    nt = NameTranslator()
+    print(nt.i2d('2785956.2787490'))
