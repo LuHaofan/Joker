@@ -60,22 +60,17 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-<<<<<<< HEAD
-=======
 
         #note_list {
             overflow-y: scroll;
             height: 100vh;
         }
-
->>>>>>> 921737fc8d1af61e9c695a23cd0dcd0a69ee7722
     </style>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
     <script src="{% static 'editor/js/jquery.min.js' %}"></script>
     <script src="{% static 'editor/js/editormd.js' %}"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-<<<<<<< HEAD
 
     <script src="https://cdn.neo4jlabs.com/neovis.js/v1.5.0/neovis.js"></script>
 
@@ -145,27 +140,26 @@
 </script>
 
 <body onload="draw()">
-=======
-    
+
     <script src="https://unpkg.com/d3@5.15.0" charset="utf-8"></script>
     <script src="https://unpkg.com/neo4j-driver-lite" charset="utf-8"></script>
-        
-    
-</head>
-<body>
->>>>>>> 921737fc8d1af61e9c695a23cd0dcd0a69ee7722
-    {% csrf_token %}
 
-    <nav class="navbar navbar-inverse" style="margin-top: 0; margin-bottom: 0;">
-        <div class="container-fluid">
-            <div class="navbar-header">
-                <a class="navbar-brand" href="#">Joker</a>
-            </div>
-            <ul class="nav navbar-nav">
-                <li><a href="{% url 'editor:home' %}">Home</a></li>
-                <li class="active"><a href="#">Editor</a></li>
-                <li><a href="{% url 'editor:graph' %}">Knowledge Graph</a></li>
-                <!-- <li class="dropdown">
+
+    </head>
+
+    <body>
+        {% csrf_token %}
+
+        <nav class="navbar navbar-inverse" style="margin-top: 0; margin-bottom: 0;">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="#">Joker</a>
+                </div>
+                <ul class="nav navbar-nav">
+                    <li><a href="{% url 'editor:home' %}">Home</a></li>
+                    <li class="active"><a href="#">Editor</a></li>
+                    <li><a href="{% url 'editor:graph' %}">Knowledge Graph</a></li>
+                    <!-- <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span
                             class="glyphicon glyphicon-remove"></span> ML
                         <span class="caret"></span></a>
@@ -175,453 +169,538 @@
                         <li><a href="#">ML 1-3</a></li>
                     </ul>
                 </li> -->
-            </ul>
+                </ul>
 
 
-            <ul class="nav navbar-nav navbar-right">
-                <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-                <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
-            </ul>
-            <ul class="nav navbar-nav navbar-right">
-                <button class="btn btn-success navbar-btn" data-toggle="modal" data-target="#mdModal">md</button>
-                <button class="btn btn-success navbar-btn" data-toggle="modal" data-target="#bibModal">bibtex</button>
-            </ul>
-            <form class="navbar-form navbar-right" action="/action_page.php">
-                <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Search">
-                    <div class="input-group-btn">
-                        <button class="btn btn-default" type="submit">
-                            <i class="glyphicon glyphicon-search"></i>
-                        </button>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="#"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+                    <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <button class="btn btn-success navbar-btn" data-toggle="modal" data-target="#mdModal">md</button>
+                    <button class="btn btn-success navbar-btn" data-toggle="modal"
+                        data-target="#bibModal">bibtex</button>
+                </ul>
+                <form class="navbar-form navbar-right" action="/action_page.php">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" type="submit">
+                                <i class="glyphicon glyphicon-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </nav>
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb" style="margin-top: 0; margin-bottom: 0; text-align: left;">
+                <li class="breadcrumb-item"><a href="#"><span class="glyphicon glyphicon-remove"></span> HCI</a></li>
+                <li class="breadcrumb-item"><a href="#"><span class="glyphicon glyphicon-remove"></span> ML</a></li>
+                <li class="breadcrumb-item active" aria-current="page"><span class="glyphicon glyphicon-remove"></span>
+                    WiFi
+                </li>
+            </ol>
+        </nav>
+        <!-- Modals -->
+        <div id="bibModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content" style="text-align: left;">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Import Bibtex</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form action="{% url 'editor:bibtex_handler' %}" method="post">
+                            {% csrf_token %}
+                            <label for="bibtex">Citation in Bibtex Format:</label>
+                            <div class="form-group">
+                                <textarea class="form-control" rows="15" id="bibtex" name="bibtex"></textarea>
+                            </div>
+                            <!-- <input type="text" name="bib-text" id="bib-text"> -->
+                            <input type="submit" value="Submit" , style="display: block;">
+                            <label for="import-btn">Upload PDF:</label>
+                            <input type='file' id="import-btn" name="import-btn">
+                        </form>
                     </div>
                 </div>
-            </form>
-        </div>
-    </nav>
-    <!-- Breadcrumb -->
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb" style="margin-top: 0; margin-bottom: 0; text-align: left;">
-            <li class="breadcrumb-item"><a href="#"><span class="glyphicon glyphicon-remove"></span> HCI</a></li>
-            <li class="breadcrumb-item"><a href="#"><span class="glyphicon glyphicon-remove"></span> ML</a></li>
-            <li class="breadcrumb-item active" aria-current="page"><span class="glyphicon glyphicon-remove"></span> WiFi
-            </li>
-        </ol>
-    </nav>
-    <!-- Modals -->
-    <div id="bibModal" class="modal fade" role="dialog">
-        <div class="modal-dialog">
 
-            <!-- Modal content-->
-            <div class="modal-content" style="text-align: left;">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Import Bibtex</h4>
+            </div>
+        </div>
+
+        <div id="mdModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Import Markdown</h4>
+                    </div>
+                    <div class="modal-body">
+                        <input type='file' id="import-btn">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Import</button>
+                    </div>
                 </div>
-                <div class="modal-body">
-                    <form action="{% url 'editor:bibtex_handler' %}" method="post">
-                        {% csrf_token %}
-                        <label for="bibtex">Citation in Bibtex Format:</label>
-                        <div class="form-group">
-                            <textarea class="form-control" rows="15" id="bibtex" name="bibtex"></textarea>
+
+            </div>
+        </div>
+
+        <div class="container-fluid text-center">
+            <div class="row content">
+                <div class="col-sm-2 sidenav" style="height: 100vh;">
+                    <div id="note_list">
+                        <ul></ul>
+                    </div>
+                </div>
+                <div id="layout" class="col-sm-6" style="height: 100vh; overflow: auto;">
+                    <input type="text" name="note-title" id="note-title" value="" placeholder="Note Title">
+                    <div class="btns">
+                        <button id="new-btn">New</button>
+                        <button id="delete-btn">Delete</button>
+                        <button id="save-btn">Save</button>
+                        <button id="preview-btn">Preview</button>
+                        <button id="toolbar-btn">Toolbar</button>
+                        <button id="export-btn">Export</button>
+                        <span>| Tags:</span>
+                        <div class="dropdown" style="display: inline;">
+                            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                1st Tag
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                <li><a href="#">1st Tag</a></li>
+                                <li class="divider"></li>
+                            </ul>
                         </div>
-                        <!-- <input type="text" name="bib-text" id="bib-text"> -->
-                        <input type="submit" value="Submit" , style="display: block;">
-                        <label for="import-btn">Upload PDF:</label>
-                        <input type='file' id="import-btn" name="import-btn">
-                    </form>
+                        <div class="dropdown" style="display: inline;">
+                            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                2nd Tag
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                <li><a href="#">2nd Tag</a></li>
+                                <li class="divider"></li>
+                            </ul>
+                        </div>
+                        <div class="dropdown" style="display: inline;">
+                            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                3rd Tag
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                <li><a href="#">3rd Tag</a></li>
+                                <li class="divider"></li>
+                            </ul>
+                        </div>
+                        <div class="dropdown" style="display: inline;">
+                            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                4th Tag
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                <li><a href="#">4th Tag</a></li>
+                                <li class="divider"></li>
+                            </ul>
+                        </div>
+                        <div class="dropdown" style="display: inline;">
+                            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                5th Tag
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                <li><a href="#">5th Tag</a></li>
+                                <li class="divider"></li>
+                            </ul>
+                        </div>
+                        <label for="tag_name">Tag:</label>
+                        <input type="text" id="tag_name" name="tag_name">
+                        <!-- <br> -->
+                        <button id="save-tag-btn" style="display: inline;">Save</button>
+                    </div>
+                    <div id="test-editormd"></div>
+                </div>
+                <div class="col-sm-4 sidenav">
+                    <iframe src="{% static 'editor/pdf/test.pdf' %}" width="100%" height="100%"
+                        style="height: 100vh;overflow: auto;">
+                    </iframe>
                 </div>
             </div>
-
         </div>
-    </div>
-
-    <div id="mdModal" class="modal fade" role="dialog">
-        <div class="modal-dialog">
-
-            <!-- Modal content-->
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Import Markdown</h4>
-                </div>
-                <div class="modal-body">
-                    <input type='file' id="import-btn">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Import</button>
-                </div>
-            </div>
-
+        <div class="jumbotron" style="text-align: left;">
+            <h1>Explore</h1>
+            <p>Given the tags assigned to this paper, we recommend following related papers for you</p>
         </div>
-    </div>
-
-    <div class="container-fluid text-center">
-        <div class="row content">
-            <div class="col-sm-2 sidenav" style="height: 100vh; overflow: scroll;">
-                <div id="note_list">
-                    <ul></ul>
+        <div class="panel-wrapper" style="text-align: left;">
+            <div class="panel panel-default">
+                <!-- Default panel contents -->
+                <div class="panel-heading">Papers in you database</div>
+                <div class="panel-body">
+                    <p>We recommend you to review the following papers. They seem to be relevant to this paper</p>
                 </div>
+
+                <!-- Table -->
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Authors</th>
+                            <th>URL</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>john@example.com</td>
+                        </tr>
+                        <tr>
+                            <td>Mary</td>
+                            <td>Moe</td>
+                            <td>mary@example.com</td>
+                        </tr>
+                        <tr>
+                            <td>July</td>
+                            <td>Dooley</td>
+                            <td>july@example.com</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-            <div id="layout" class="col-sm-6" style="height: 100vh; overflow: auto;">
-                <input type="text" name="note-title" id="note-title" value="" placeholder="Note Title">
-                <div class="btns">
-                    <button id="new-btn">New</button>
-                    <button id="delete-btn">Delete</button>
-                    <button id="save-btn">Save</button>
-                    <button id="preview-btn">Preview</button>
-                    <button id="toolbar-btn">Toolbar</button>
-                    <button id="export-btn">Export</button>
+            <div class="panel panel-default">
+                <!-- Default panel contents -->
+                <div class="panel-heading">Papers from Internet</div>
+                <div class="panel-body">
+                    <p>You might also be interested in the following papers. They seem to be related...</p>
                 </div>
-                <div id="test-editormd"></div>
-            </div>
-            <div class="col-sm-4 sidenav">
-                <iframe src="{% static 'editor/pdf/test.pdf' %}" width="100%" height="100%"
-                    style="height: 100vh;overflow: auto;">
-                </iframe>
+
+                <!-- Table -->
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Authors</th>
+                            <th>URL</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>John</td>
+                            <td>Doe</td>
+                            <td>john@example.com</td>
+                        </tr>
+                        <tr>
+                            <td>Mary</td>
+                            <td>Moe</td>
+                            <td>mary@example.com</td>
+                        </tr>
+                        <tr>
+                            <td>July</td>
+                            <td>Dooley</td>
+                            <td>july@example.com</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
-    </div>
-    <div class="jumbotron" style="text-align: left;">
-        <h1>Explore</h1>
-        <p>Given the tags assigned to this paper, we recommend following related papers for you</p>
-    </div>
-    <div class="panel-wrapper" style="text-align: left;">
-        <div class="panel panel-default">
-            <!-- Default panel contents -->
-            <div class="panel-heading">Papers in you database</div>
-            <div class="panel-body">
-                <p>We recommend you to review the following papers. They seem to be relevant to this paper</p>
-            </div>
+        <footer class="container-fluid text-center">
+            <p>Copyright &copy; 2022 | Team Members: Haofan Lu, Daisy Zheng, Owen Li</p>
+        </footer>
 
-            <!-- Table -->
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>Authors</th>
-                        <th>URL</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>John</td>
-                        <td>Doe</td>
-                        <td>john@example.com</td>
-                    </tr>
-                    <tr>
-                        <td>Mary</td>
-                        <td>Moe</td>
-                        <td>mary@example.com</td>
-                    </tr>
-                    <tr>
-                        <td>July</td>
-                        <td>Dooley</td>
-                        <td>july@example.com</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div class="panel panel-default">
-            <!-- Default panel contents -->
-            <div class="panel-heading">Papers from Internet</div>
-            <div class="panel-body">
-                <p>You might also be interested in the following papers. They seem to be related...</p>
-            </div>
+        <script type="text/javascript">
 
-            <!-- Table -->
-            <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>Authors</th>
-                        <th>URL</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>John</td>
-                        <td>Doe</td>
-                        <td>john@example.com</td>
-                    </tr>
-                    <tr>
-                        <td>Mary</td>
-                        <td>Moe</td>
-                        <td>mary@example.com</td>
-                    </tr>
-                    <tr>
-                        <td>July</td>
-                        <td>Dooley</td>
-                        <td>july@example.com</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <footer class="container-fluid text-center">
-        <p>Copyright &copy; 2022 | Team Members: Haofan Lu, Daisy Zheng, Owen Li</p>
-    </footer>
+            var testEditor;
 
-    <script type="text/javascript">
-        var testEditor;
+            $(function () {
+                $.get("{% static 'editor/notes/empty.md' %}", function (md) {
+                    // console.log(md);
+                    testEditor = editormd("test-editormd", {
+                        width: "100%",
+                        height: "100%",
+                        path: "{% static 'editor/lib/' %}",
+                        theme: "dark",
+                        previewTheme: "dark",
+                        editorTheme: "pastel-on-dark",
+                        markdown: md,
+                        codeFold: true,
+                        //syncScrolling : false,
+                        saveHTMLToTextarea: true,    // 保存 HTML 到 Textarea
+                        searchReplace: true,
+                        //watch : false,                // 关闭实时预览
+                        htmlDecode: "style,script,iframe|on*",            // 开启 HTML 标签解析，为了安全性，默认不开启    
+                        toolbar: false,             //关闭工具栏
+                        //previewCodeHighlight : false, // 关闭预览 HTML 的代码块高亮，默认开启
+                        emoji: true,
+                        taskList: true,
+                        tocm: true,         // Using [TOCM]
+                        tex: true,                   // 开启科学公式TeX语言支持，默认关闭
+                        flowChart: true,             // 开启流程图支持，默认关闭
+                        sequenceDiagram: true,       // 开启时序/序列图支持，默认关闭,
+                        //dialogLockScreen : false,   // 设置弹出层对话框不锁屏，全局通用，默认为true
+                        //dialogShowMask : false,     // 设置弹出层对话框显示透明遮罩层，全局通用，默认为true
+                        //dialogDraggable : false,    // 设置弹出层对话框不可拖动，全局通用，默认为true
+                        //dialogMaskOpacity : 0.4,    // 设置透明遮罩层的透明度，全局通用，默认值为0.1
+                        //dialogMaskBgColor : "#000", // 设置透明遮罩层的背景颜色，全局通用，默认为#fff
+                        imageUpload: true,
+                        imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
+                        imageUploadURL: "./php/upload.php",
+                        onload: function () {
+                            console.log('onload', this);
+                            //this.fullscreen();
+                            //this.unwatch();
+                            //this.watch().fullscreen();
 
-        $(function () {
-            $.get("{% static 'editor/notes/empty.md' %}", function (md) {
-                // console.log(md);
-                testEditor = editormd("test-editormd", {
-                    width: "100%",
-                    height: "100%",
-                    path: "{% static 'editor/lib/' %}",
-                    theme: "dark",
-                    previewTheme: "dark",
-                    editorTheme: "pastel-on-dark",
-                    markdown: md,
-                    codeFold: true,
-                    //syncScrolling : false,
-                    saveHTMLToTextarea: true,    // 保存 HTML 到 Textarea
-                    searchReplace: true,
-                    //watch : false,                // 关闭实时预览
-                    htmlDecode: "style,script,iframe|on*",            // 开启 HTML 标签解析，为了安全性，默认不开启    
-                    toolbar: false,             //关闭工具栏
-                    //previewCodeHighlight : false, // 关闭预览 HTML 的代码块高亮，默认开启
-                    emoji: true,
-                    taskList: true,
-                    tocm: true,         // Using [TOCM]
-                    tex: true,                   // 开启科学公式TeX语言支持，默认关闭
-                    flowChart: true,             // 开启流程图支持，默认关闭
-                    sequenceDiagram: true,       // 开启时序/序列图支持，默认关闭,
-                    //dialogLockScreen : false,   // 设置弹出层对话框不锁屏，全局通用，默认为true
-                    //dialogShowMask : false,     // 设置弹出层对话框显示透明遮罩层，全局通用，默认为true
-                    //dialogDraggable : false,    // 设置弹出层对话框不可拖动，全局通用，默认为true
-                    //dialogMaskOpacity : 0.4,    // 设置透明遮罩层的透明度，全局通用，默认值为0.1
-                    //dialogMaskBgColor : "#000", // 设置透明遮罩层的背景颜色，全局通用，默认为#fff
-                    imageUpload: true,
-                    imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
-                    imageUploadURL: "./php/upload.php",
-                    onload: function () {
-                        console.log('onload', this);
-                        //this.fullscreen();
-                        //this.unwatch();
-                        //this.watch().fullscreen();
-
-                        //this.setMarkdown("#PHP");
-                        //this.width("100%");
-                        //this.height(480);
-                        //this.resize("100%", 640);
-                    }
-                });
-            });
-
-            var noteIdxs = {}
-
-            /* note-list.json is loaded here */
-            function load_note_list() {
-                $("#note_list ul").empty();
-                $.get("{% static 'editor/json/note-list.json' %}", function (json) {
-                    console.log(json.notes.length);
-                    for (var i = 0; i < json.notes.length; i++) {
-                        console.log(i);
-                        $("#note_list ul").append('<li><a href="#">' + json.notes[i].title + '</a></li>');
-                        noteIdxs[json.notes[i].title] = i
-                    }
-                    $('#note_list a').addClass("w3-bar-item w3-button");
-                    $('#note_list ul').children().click(function () {
-                        var path = json.notes[$(this).index()].path;
-                        var title = json.notes[$(this).index()].title;
-                        console.log(path);
-                        $.get(path, function (md) {
-                            $("#note-title").val(title);
-                            testEditor.load_note(md);
-                            loadRecs(md);
-                        });
-                    });
-                });
-            }
-
-            function load_default() {
-                $("#note-title").val("");
-                testEditor.clear();
-            }
-
-            function saveNote(showAlert=true) {
-                console.log($("#note-title").val())
-                if ($("#note-title").val() == "") {
-                    alert("Please give your note a title");
-                    return false
-                } else {
-                    $.ajax({
-                        method: 'POST',
-                        url: "{% url 'editor:save_note' %}",
-                        data: {
-                            md: testEditor.getMarkdown(),
-                            fname: $("#note-title").val(),
-                            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
-                        },
-                        success: function () {
-                            // load_default();
-                            if (showAlert) {
-                                alert('Note saved');
-                            }
-                            load_note_list();
-                        },
-                    });
-                    return true
-                }
-            }
-
-            function loadRelatedNote(title) {
-                if (saveNote(showAlert=false)) {
-                    $.get("{% static 'editor/json/note-list.json' %}", function (json) {
-                        var path = json.notes[noteIdxs[title]].path;
-                        $.get(path, function (md) {
-                            $("#note-title").val(title);
-                            testEditor.load_note(md);
-                            loadRecs(md);
-                        });
-                    });
-                }
-            }
-
-            function loadRecs(md) {
-                $("#recommendations").empty();
-
-                title = md.split('\n')[1]
-                if (!title.startsWith("> Title: ")) {
-                    title = md.split('\n')[0]
-                }
-                title = title.replace("> Title: ", "")
-                $.ajax({
-                    method: 'GET',
-                    url: "{% url 'editor:get_recs' %}",
-                    data: {
-                        "title": title
-                    },
-                    success: function (recs) {
-                        recs = JSON.parse(recs)
-                        for (var keyword in recs) {
-                            const listId = "list-" + keyword.replace(" ", "-")
-                            $("#recommendations").append("<b>" + keyword + "</b>")
-                            $("#recommendations").append("<ul id=" + listId + "></ul>")
-                            for (var i = 0; i < recs[keyword].length; i++) {
-                                const itemId = keyword.replace(" ", "-") + "-" + i.toString();
-                                $("#" + listId)
-                                    .append('<li id=' + itemId + '><a href="#">' + recs[keyword][i] + '</a></li>');
-                                $("#" + itemId + " a").click(function() {
-                                    const recTitle = $("#" + itemId + " a").html()
-                                    loadRelatedNote(recTitle)
-                                });
-                            }
+                            //this.setMarkdown("#PHP");
+                            //this.width("100%");
+                            //this.height(480);
+                            //this.resize("100%", 640);
                         }
-                    },
+                    });
                 });
-            }
 
+                var noteIdxs = {}
+                var tag_list = ""
 
-            $("#new-btn").bind('click', function () {
-                load_default();
-            })
-
-            $("#delete-btn").bind('click', function () {
-                if ($("#note-title").val() == "") {
-                    alert("Please specify the note you want to delete");
-                } else {
+                function get_semantic_scholar_data(tag_list) {
+                    api = "http://api.semanticscholar.org/graph/v1/paper/search?query=";
                     $.ajax({
-                        method: 'POST',
-                        url: "{% url 'editor:delete_note' %}",
+                        method: 'GET',
+                        url: "{% url 'editor:querySemanticScholar' %}",
                         data: {
-                            fname: $("#note-title").val(),
+                            url: api+tag_list,
                             csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
                         },
-                        success: function () {
-                            alert('Note deleted');
-                            load_note_list();
-                            load_default();
+                        success: function () {alert("Success!")},
+                    });
+                }
+                /* note-list.json is loaded here */
+                function load_note_list() {
+                    $("#note_list ul").empty();
+                    $.get("{% static 'editor/json/note-list.json' %}", function (json) {
+                        console.log(json.notes.length);
+                        for (var i = 0; i < json.notes.length; i++) {
+                            console.log(i);
+                            $("#note_list ul").append('<li><a href="#">' + json.notes[i].title + '</a></li>');
+                            noteIdxs[json.notes[i].title] = i
+                        }
+                        $('#note_list a').addClass("w3-bar-item w3-button");
+                        $('#note_list ul').children().click(function () {
+                            var path = json.notes[$(this).index()].path;
+                            var title = json.notes[$(this).index()].title;
+                            var tentative_tags = json.notes[$(this).index()].papers[0].tags;
+                            for (let index = 0; index < tentative_tags.length; index++) {
+                                $(".dropdown ul").append("<li><a href='#'>" + tentative_tags[index] + "</a></li>");
+                            }
+                            $(".dropdown-menu li a").click(function () {
+                                tag_list = tag_list + $(this).text() + "+";
+                                $(this).parents(".dropdown").find('.btn').html($(this).text() + ' <span class="caret"></span>');
+                                $(this).parents(".dropdown").find('.btn').val($(this).data('value'));
+                                console.log(tag_list.substr(0, tag_list.length - 1));
+                                get_semantic_scholar_data(tag_list.substr(0, tag_list.length - 1))
+                            });
+                            console.log(tentative_tags);
+                            $.get(path, function (md) {
+                                $("#note-title").val(title);
+                                testEditor.load_note(md);
+                                loadRecs(md);
+                            });
+                        });
+                    });
+                }
+
+                function load_default() {
+                    $("#note-title").val("");
+                    testEditor.clear();
+                }
+
+
+                function saveNote(showAlert = true) {
+                    console.log($("#note-title").val())
+                    if ($("#note-title").val() == "") {
+                        alert("Please give your note a title");
+                        return false
+                    } else {
+                        $.ajax({
+                            method: 'POST',
+                            url: "{% url 'editor:save_note' %}",
+                            data: {
+                                md: testEditor.getMarkdown(),
+                                fname: $("#note-title").val(),
+                                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                            },
+                            success: function () {
+                                // load_default();
+                                if (showAlert) {
+                                    alert('Note saved');
+                                }
+                                load_note_list();
+                            },
+                        });
+                        return true
+                    }
+                }
+
+                function loadRelatedNote(title) {
+                    if (saveNote(showAlert = false)) {
+                        $.get("{% static 'editor/json/note-list.json' %}", function (json) {
+                            var path = json.notes[noteIdxs[title]].path;
+                            $.get(path, function (md) {
+                                $("#note-title").val(title);
+                                testEditor.load_note(md);
+                                loadRecs(md);
+                            });
+                        });
+                    }
+                }
+
+                function loadRecs(md) {
+                    $("#recommendations").empty();
+
+                    title = md.split('\n')[1]
+                    if (!title.startsWith("> Title: ")) {
+                        title = md.split('\n')[0]
+                    }
+                    title = title.replace("> Title: ", "")
+                    $.ajax({
+                        method: 'GET',
+                        url: "{% url 'editor:get_recs' %}",
+                        data: {
+                            "title": title
+                        },
+                        success: function (recs) {
+                            recs = JSON.parse(recs)
+                            for (var keyword in recs) {
+                                const listId = "list-" + keyword.replace(" ", "-")
+                                $("#recommendations").append("<b>" + keyword + "</b>")
+                                $("#recommendations").append("<ul id=" + listId + "></ul>")
+                                for (var i = 0; i < recs[keyword].length; i++) {
+                                    const itemId = keyword.replace(" ", "-") + "-" + i.toString();
+                                    $("#" + listId)
+                                        .append('<li id=' + itemId + '><a href="#">' + recs[keyword][i] + '</a></li>');
+                                    $("#" + itemId + " a").click(function () {
+                                        const recTitle = $("#" + itemId + " a").html()
+                                        loadRelatedNote(recTitle)
+                                    });
+                                }
+                            }
                         },
                     });
                 }
-            });
 
-            $("#export-btn").bind('click', function () {
-                testEditor.save_note();
-            });
 
-            $("#save-btn").bind('click', function () {
-                saveNote()
-            });
+                $("#new-btn").bind('click', function () {
+                    load_default();
+                })
 
-            $("#import-btn").bind('click', function () {
-                var files = document.getElementById('import-btn');
-                files.addEventListener('change', function (event) {
-                    console.log(event.target.files);
-                    console.log(
-                        `文件名称:${event.target.files[0].name}
+                $("#delete-btn").bind('click', function () {
+                    if ($("#note-title").val() == "") {
+                        alert("Please specify the note you want to delete");
+                    } else {
+                        $.ajax({
+                            method: 'POST',
+                            url: "{% url 'editor:delete_note' %}",
+                            data: {
+                                fname: $("#note-title").val(),
+                                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                            },
+                            success: function () {
+                                alert('Note deleted');
+                                load_note_list();
+                                load_default();
+                            },
+                        });
+                    }
+                });
+
+                $("#export-btn").bind('click', function () {
+                    testEditor.save_note();
+                });
+
+                $("#save-btn").bind('click', function () {
+                    saveNote()
+                });
+
+                $("#import-btn").bind('click', function () {
+                    var files = document.getElementById('import-btn');
+                    files.addEventListener('change', function (event) {
+                        console.log(event.target.files);
+                        console.log(
+                            `文件名称:${event.target.files[0].name}
                             文件类型:${event.target.files[0].type}
                             文件大小:${event.target.files[0].size} bytes`
-                    );
+                        );
 
 
-                    let file = event.target.files[0];
-                    let reader = new FileReader();
-                    reader.readAsText(file);
-                    reader.onload = function () {
-                        console.log(reader.result);
-                        testEditor.load_note(reader.result);
+                        let file = event.target.files[0];
+                        let reader = new FileReader();
+                        reader.readAsText(file);
+                        reader.onload = function () {
+                            console.log(reader.result);
+                            testEditor.load_note(reader.result);
+                        }
+                    });
+                });
+
+                $("#preview-btn").bind('click', function () {
+                    testEditor.previewing();
+                });
+
+                var flag = 1;
+                $("#toggle-toolbar-btn").bind('click', function () {
+                    if (flag == 0) {
+                        testEditor.showToolbar();
+                        flag = 1;
+                    } else {
+                        testEditor.hideToolbar();
+                        flag = 0;
                     }
                 });
+                load_note_list();
             });
+        </script>
 
-            $("#preview-btn").bind('click', function () {
-                testEditor.previewing();
-            });
 
-            var flag = 1;
-            $("#toggle-toolbar-btn").bind('click', function () {
-                if (flag == 0) {
-                    testEditor.showToolbar();
-                    flag = 1;
-                } else {
-                    testEditor.hideToolbar();
-                    flag = 0;
+
+        <script type="text/javascript">
+            $("#save-tag-btn").bind('click', function () {
+                const test_paper_data = {
+                    "title": "Test Paper",
+                    "short_title": "Test Pa..."
                 }
+
+                const tag_name = document.getElementById('tag_name').value
+
+                $.ajax({
+                    method: 'POST',
+                    url: "{% url 'editor:save_tag' %}",
+                    data: {
+                        "paper_data": JSON.stringify(test_paper_data),
+                        "tag_name": tag_name,
+                        "csrfmiddlewaretoken": $('input[name=csrfmiddlewaretoken]').val()
+                    },
+                    success: function () {
+                        alert('Tag saved');
+                        draw();
+                    },
+                });
+
             });
-            load_note_list();
-        });
-    </script>
+        </script>
 
-    <label for="tag_name">Tag:</label>
-    <input type="text" id="tag_name" name="tag_name">
-    <br>
-    <button id="save-tag-btn">Save</button>
+        <h4>Paper Recommendations</h4>
+        <div id="recommendations">
+        </div>
 
-    <script type="text/javascript">
-        $("#save-tag-btn").bind('click', function () {
-            const test_paper_data = {
-                "title": "Test Paper",
-                "short_title": "Test Pa..."
-            }
-
-            const tag_name = document.getElementById('tag_name').value
-            
-            $.ajax({
-                method: 'POST',
-                url: "{% url 'editor:save_tag' %}",
-                data: {
-                    "paper_data": JSON.stringify(test_paper_data),
-                    "tag_name": tag_name,
-                    "csrfmiddlewaretoken": $('input[name=csrfmiddlewaretoken]').val()
-                },
-                success: function () {
-                    alert('Tag saved');
-                    draw();
-                },
-            });
-
-        });
-    </script> 
-
-    <h4>Paper Recommendations</h4>
-    <div id="recommendations">
-    </div>
-    
-</body>
+    </body>
 
 </html>

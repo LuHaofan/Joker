@@ -1,0 +1,47 @@
+{
+    "total": 2703,
+    "offset": 0,
+    "next": 10,
+    "data": [
+        {
+            "paperId": "e40189c5d4e24a13389c0cdffd36a871d428c866",
+            "title": "WiFi Says \"Hi!\" Back to Strangers!"
+        },
+        {
+            "paperId": "aba12a981c23474e1598d71139982a1d32fbadf9",
+            "title": "Analysing encryption mechanisms and functional safety in a ROS\u2010based architecture"
+        },
+        {
+            "paperId": "8207166d36dd08ba380269c258e09dd18eb81b9d",
+            "title": "Lightweight Authenticated-Encryption Scheme for Internet of Things Based on Publish-Subscribe Communication"
+        },
+        {
+            "paperId": "ddcf15b51bf36ff84a002b89fbd6e0bf53057260",
+            "title": "New RSA Encryption Mechanism Using One-Time Encryption Keys and Unpredictable Bio-Signal for Wireless Communication Devices"
+        },
+        {
+            "paperId": "1ea4898c7868c6c4a73ac8782ec2bb8112688229",
+            "title": "Zone Encryption with Anonymous Authentication for V2V Communication"
+        },
+        {
+            "paperId": "05fe98bf7c18860700fb1323d6508f45aec7fb9c",
+            "title": "E health care data privacy preserving efficient file retrieval from the cloud service provider using attribute based file encryption"
+        },
+        {
+            "paperId": "7ce20b20f7208844a7fa6567a1d6292759ed21dd",
+            "title": "Analysis of Lightweight Encryption Scheme for Fog-to-Things Communication"
+        },
+        {
+            "paperId": "4aab6152a974e0753d9d578ea6e86c7797c0a1fe",
+            "title": "An Efficient Encryption Algorithm for Perfect Forward Secrecy in Satellite Communication"
+        },
+        {
+            "paperId": "68c4b5ecaee33bbfb755355d963197c44934ffe8",
+            "title": "Research on Point-To-Point Encryption Method of Power System Communication Data Based on Block Chain Technology"
+        },
+        {
+            "paperId": "a088075625f3940570186e507764cbad9b79cd8d",
+            "title": "The Road to Privacy in IoT: Beyond Encryption and Signatures, Towards Unobservable Communication"
+        }
+    ]
+}
