@@ -350,7 +350,7 @@
                 </div>
 
                 <!-- Table -->
-                <table class="table table-hover">
+                <table class="table table-hover" id="database-paper-recs">
                     <thead>
                         <tr>
                             <th>Title</th>
@@ -359,21 +359,6 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>John</td>
-                            <td>Doe</td>
-                            <td>john@example.com</td>
-                        </tr>
-                        <tr>
-                            <td>Mary</td>
-                            <td>Moe</td>
-                            <td>mary@example.com</td>
-                        </tr>
-                        <tr>
-                            <td>July</td>
-                            <td>Dooley</td>
-                            <td>july@example.com</td>
-                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -456,6 +441,7 @@
                 var tag_list = ""
 
                 function get_semantic_scholar_data(tag_list) {
+                    console.log("CLICKED")
                     api = "http://api.semanticscholar.org/graph/v1/paper/search?query=";
                     $.ajax({
                         method: 'GET',
@@ -476,6 +462,7 @@
                                         const author = authors[j];
                                         authors_list = authors_list + author.name + ", ";
                                     }
+                                    console.log(title)
                                     $("#paper-outside table tbody").append("<tr><td>"+title+"</td><td>"+authors_list+"</td></tr>");
                                 }
                             })
@@ -564,7 +551,8 @@
                 }
 
                 function loadRecs(md) {
-                    $("#recommendations").empty();
+                    // $("#recommendations").empty();
+                    $("#database-paper-recs tbody").empty()
 
                     title = md.split('\n')[1]
                     if (!title.startsWith("> Title: ")) {
@@ -579,19 +567,35 @@
                         },
                         success: function (recs) {
                             recs = JSON.parse(recs)
-                            for (var keyword in recs) {
-                                const listId = "list-" + keyword.replace(" ", "-")
-                                $("#recommendations").append("<b>" + keyword + "</b>")
-                                $("#recommendations").append("<ul id=" + listId + "></ul>")
-                                for (var i = 0; i < recs[keyword].length; i++) {
-                                    const itemId = keyword.replace(" ", "-") + "-" + i.toString();
-                                    $("#" + listId)
-                                        .append('<li id=' + itemId + '><a href="#">' + recs[keyword][i] + '</a></li>');
-                                    $("#" + itemId + " a").click(function () {
-                                        const recTitle = $("#" + itemId + " a").html()
-                                        loadRelatedNote(recTitle)
+                            console.log(Object.keys(recs).length)
+                            // for (var keyword in recs) {
+                            const papers = Object.keys(recs)
+                            for (var i = 0; i < papers.length; i++) {
+                                const paper = papers[i]
+                                const authors = recs[papers[i]][0]
+                                const url = recs[papers[i]][1]
+                                // const listId = "list-" + keyword.replace(" ", "-")
+                                console.log(paper)
+                                console.log(recs[paper])
+                                $("#database-paper-recs tbody").append("<tr><td><a href='#' id='rec" + i.toString() + "'>" + paper + "</a></td><td>" + authors.join(", ") + "</td><td><a href='" + url + "'>" + url + "</a></td>")
+
+                                $("#rec" + i.toString()).click(function () {
+                                        // const recTitle = $("#" + itemId + " a").html()
+                                        loadRelatedNote(paper)
                                     });
-                                }
+
+
+                                // $("#recommendations").append("<b>" + keyword + "</b>")
+                                // $("#recommendations").append("<ul id=" + listId + "></ul>")
+                                // for (var i = 0; i < recs[keyword].length; i++) {
+                                //     const itemId = keyword.replace(" ", "-") + "-" + i.toString();
+                                //     $("#" + listId)
+                                //         .append('<li id=' + itemId + '><a href="#">' + recs[keyword][i] + '</a></li>');
+                                //     $("#" + itemId + " a").click(function () {
+                                //         const recTitle = $("#" + itemId + " a").html()
+                                //         loadRelatedNote(recTitle)
+                                //     });
+                                // }
                             }
                         },
                     });
@@ -697,9 +701,9 @@
             });
         </script>
 
-        <h4>Paper Recommendations</h4>
+        <!-- <h4>Paper Recommendations</h4>
         <div id="recommendations">
-        </div>
+        </div> -->
 
     </body>
 
