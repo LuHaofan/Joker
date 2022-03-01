@@ -20,6 +20,9 @@ def updateGraph(d):
     if "numpages" in d:
         paper.numpages = d["numpages"]
 
+    if "url" in d:
+        paper.url = d["url"]
+
     paper.save()
 
     if "authors" in d:
@@ -54,11 +57,21 @@ def recommend(title):
 	    raise RuntimeError("Paper doesn't exist in DB")
 
     recs = {}
-    for keyword in paper.keyword:
-        query = "MATCH (n:Keyword {name: '" + keyword.name + "'})<-[:CONTAINS_KEYWORD]-(paper) return paper.title"
+    # recs = set()
+    # print(paper.tag)
+    for tag in paper.tag:
+        # print(tag)
+        query = "MATCH (n:Tag {name: '" + tag.name + "'})<-[:IS_ABOUT]-(paper) return paper.title"
         papers = db.cypher_query(query)[0]
+        
         papers = [p for sublist in papers for p in sublist]
         papers = list(filter(lambda paper_title: paper_title != title, papers))
-        if len(papers) > 0:
-            recs[keyword.name] = papers
+        # print(papers)
+        for paper in papers:
+            query = "MATCH (n:Paper {title: '" + paper + "'})-[:WRITTEN_BY]->(author) return author.name"
+            authors = db.cypher_query(query)[0]
+            query = "MATCH (n:Paper {title: '" + paper + "'}) return n.url"
+            url = db.cypher_query(query)[0]
+            # recs[tag.name] = papers
+            recs[paper] = [authors, url]
     return recs
