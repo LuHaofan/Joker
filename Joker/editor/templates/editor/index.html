@@ -341,6 +341,7 @@
             <h1>Explore</h1>
             <p>Given the tags assigned to this paper, we recommend following related papers for you</p>
         </div>
+
         <div class="panel-wrapper" style="text-align: left;">
             <div class="panel panel-default">
                 <!-- Default panel contents -->
@@ -362,19 +363,25 @@
                     </tbody>
                 </table>
             </div>
-            <div class="panel panel-default" id = "paper-outside">
+            <div class="panel panel-default" id="paper-outside">
                 <!-- Default panel contents -->
                 <div class="panel-heading">Papers from Internet</div>
                 <div class="panel-body">
                     <p>You might also be interested in the following papers. They seem to be related...</p>
                 </div>
-
+                <div class="progress" id="loading" style="display: none;">
+                    <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 45%">
+                      <span class="sr-only">45% Complete</span>
+                    </div>
+                  </div>
                 <!-- Table -->
                 <table class="table table-hover">
                     <thead>
                         <tr>
                             <th>Title</th>
                             <th>Authors</th>
+                            <th>URL</th>
+                            <th>Similarity</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -382,6 +389,18 @@
                 </table>
             </div>
         </div>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-6 embed-responsive embed-responsive-4by3">
+                    <embed id="sim_graph" type="text/html" src="#" width="600" height="600" style="float:left">
+                </div>
+                <div class="col-sm-6 embed-responsive embed-responsive-4by3">
+                    <embed id="citation_graph" type="text/html" src="#" width="600" height="600" style="float:left">
+                </div>
+            </div>
+        </div>
+
+
         <footer class="container-fluid text-center">
             <p>Copyright &copy; 2022 | Team Members: Haofan Lu, Daisy Zheng, Owen Li</p>
         </footer>
@@ -440,30 +459,35 @@
                 var noteIdxs = {}
                 var tag_list = ""
 
-                function get_semantic_scholar_data(tag_list) {
+                function get_semantic_scholar_data(doi, tag_list) {
                     console.log("CLICKED")
-                    api = "http://api.semanticscholar.org/graph/v1/paper/search?query=";
                     $.ajax({
                         method: 'GET',
                         url: "{% url 'editor:querySemanticScholar' %}",
                         data: {
-                            url: api+tag_list,
+                            tag_list: tag_list,
+                            doi: doi,
                             csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
                         },
                         success: function () {
-                            $.get("{% static 'editor/json/query.json' %}", function (json){
+                            $("#paper-outside table tbody").empty()
+                            $.get("{% static 'editor/json/query.json' %}", function (json) {
                                 console.log(json);
                                 for (let i = 0; i < json.data.length; i++) {
                                     const element = json.data[i];
                                     var title = element.title;
                                     var authors = element.authors;
+                                    var url = element.url;
+                                    var similarity = element.similarity;
                                     var authors_list = "";
                                     for (let j = 0; j < authors.length; j++) {
                                         const author = authors[j];
                                         authors_list = authors_list + author.name + ", ";
                                     }
                                     console.log(title)
-                                    $("#paper-outside table tbody").append("<tr><td>"+title+"</td><td>"+authors_list+"</td></tr>");
+                                    $("#paper-outside table tbody").append("<tr><td>" + title + "</td><td>" + authors_list + "</td><td>" + url + "</td><td>" + (similarity * 100).toFixed(3) + "%" + "</td></tr>");
+                                    $("#sim_graph").attr("src", "{% static 'editor/tmp/sim_graph.html' %}")
+                                    $("#loading").hide();
                                 }
                             })
                         },
@@ -483,6 +507,7 @@
                         $('#note_list ul').children().click(function () {
                             var path = json.notes[$(this).index()].path;
                             var title = json.notes[$(this).index()].title;
+                            var doi = json.notes[$(this).index()].papers[0].doi;
                             var tentative_tags = json.notes[$(this).index()].papers[0].tags;
                             $(".dropdown ul").empty();
                             for (let i = 0; i < tentative_tags.length; i++) {
@@ -493,7 +518,8 @@
                                 $(this).parents(".dropdown").find('.btn').html($(this).text() + ' <span class="caret"></span>');
                                 $(this).parents(".dropdown").find('.btn').val($(this).data('value'));
                                 console.log(tag_list.substr(0, tag_list.length - 1));
-                                get_semantic_scholar_data(tag_list.substr(0, tag_list.length - 1))
+                                get_semantic_scholar_data(doi, tag_list.substr(0, tag_list.length - 1))
+                                $("#loading").show();
                             });
                             console.log(tentative_tags);
                             $.get(path, function (md) {
@@ -580,9 +606,9 @@
                                 $("#database-paper-recs tbody").append("<tr><td><a href='#' id='rec" + i.toString() + "'>" + paper + "</a></td><td>" + authors.join(", ") + "</td><td><a href='" + url + "'>" + url + "</a></td>")
 
                                 $("#rec" + i.toString()).click(function () {
-                                        // const recTitle = $("#" + itemId + " a").html()
-                                        loadRelatedNote(paper)
-                                    });
+                                    // const recTitle = $("#" + itemId + " a").html()
+                                    loadRelatedNote(paper)
+                                });
 
 
                                 // $("#recommendations").append("<b>" + keyword + "</b>")

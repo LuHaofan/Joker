@@ -6,7 +6,7 @@ from django.urls import reverse
 from numpy import inner
 from .models import Note, Paper, Tag, Author
 from . import util
-from . import KeywordExtractor, NameTranslator, BibParser
+from . import KeywordExtractor, NameTranslator, BibParser, SemanticScholarRec
 import requests
 
 ke = KeywordExtractor.KeywordExtractor()
@@ -135,11 +135,10 @@ def bibtex_handler(request):
     return HttpResponseRedirect(reverse('editor:index'))
 
 def querySemanticScholar(request):
-    url = request.GET['url']
-    print(url)
-    response = requests.get(url+"&offset=10&limit=5&fields=title,authors")
-    with open("editor/static/editor/json/query.json", 'w') as f:
-        json.dump(response.json(), f)
+    keywords = request.GET['tag_list'].split(",")
+    doi = request.GET['doi']
+    ssr = SemanticScholarRec.SSRec(doi, keywords, num_rec=30)
+    ssr.query()
     return HttpResponse()
     
 def saveTag(request):
