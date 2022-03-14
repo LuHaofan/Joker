@@ -12,5 +12,6 @@ urlpatterns = [
     path('bibtex_handler/', views.bibtex_handler, name = 'bibtex_handler'),
     path('save_tag/', views.saveTag, name = 'save_tag'),
     path('get_recs/', views.getRecs, name = 'get_recs'),
+    path('get_filter_options/', views.getFilterOptions, name = 'get_filter_options'),
     path('querySemanticScholar/', views.querySemanticScholar, name = 'querySemanticScholar')
 ]

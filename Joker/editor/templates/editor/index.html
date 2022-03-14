@@ -65,6 +65,12 @@
             overflow-y: scroll;
             height: 100vh;
         }
+
+        #viz {
+            margin: auto;
+            margin-bottom: 20px;
+            height: 350px;
+        }
     </style>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
@@ -81,7 +87,7 @@
 
 </head>
 <script>
-    function draw() {
+    function draw(cypher) {
         var config = {
             container_id: "viz",
             // server_url: "bolt://localhost:7687",
@@ -92,7 +98,7 @@
             arrows: true,
             labels: {
                 "Paper": {
-                    caption: "short_title",
+                    caption: "title",
                     font: {
                         size: 18
                     }
@@ -110,8 +116,8 @@
                     },
                     size: "count"
                 },
-                "Note": {
-                    caption: false,
+                "Keyword": {
+                    caption: "name",
                     font: {
                         size: 18
                     }
@@ -130,8 +136,12 @@
                     caption: true,
                     thickness: "1"
                 },
+                "CONTAINS_KEYWORD": {
+                    caption: true,
+                    thickness: "1"
+                },
             },
-            initial_cypher: "MATCH p=()-->() RETURN p"
+            initial_cypher: cypher
         }
 
         var viz = new NeoVis.default(config);
@@ -139,7 +149,7 @@
     }
 </script>
 
-<body onload="draw()">
+<body>
 
     <script src="https://unpkg.com/d3@5.15.0" charset="utf-8"></script>
     <script src="https://unpkg.com/neo4j-driver-lite" charset="utf-8"></script>
@@ -363,6 +373,9 @@
                     </tbody>
                 </table>
             </div>
+
+            <div id="viz"></div>
+            
             <div class="panel panel-default" id="paper-outside">
                 <!-- Default panel contents -->
                 <div class="panel-heading">Papers from Internet</div>
@@ -399,7 +412,6 @@
                 </div>
             </div>
         </div>
-
 
         <footer class="container-fluid text-center">
             <p>Copyright &copy; 2022 | Team Members: Haofan Lu, Daisy Zheng, Owen Li</p>
@@ -584,7 +596,9 @@
                     if (!title.startsWith("> Title: ")) {
                         title = md.split('\n')[0]
                     }
-                    title = title.replace("> Title: ", "")
+                    title = title.replace("> Title: ", "");
+                    title = title.replace("\r", "");
+                    console.log(title)
                     $.ajax({
                         method: 'GET',
                         url: "{% url 'editor:get_recs' %}",
@@ -609,6 +623,12 @@
                                     // const recTitle = $("#" + itemId + " a").html()
                                     loadRelatedNote(paper)
                                 });
+
+                                $("#rec" + i.toString()).mouseover(function () {
+                                        const cypher = "MATCH p=(original:Paper {title: '" + title + "'})-[r1]-(props1), (rec:Paper {title: '" + paper + "'})-[r2]-(props2) return original, rec, props1, props2, r1, r2";
+                                        console.log(cypher);
+                                        draw(cypher);
+                                    });
 
 
                                 // $("#recommendations").append("<b>" + keyword + "</b>")
@@ -730,6 +750,7 @@
         <!-- <h4>Paper Recommendations</h4>
         <div id="recommendations">
         </div> -->
+
 
     </body>
 
