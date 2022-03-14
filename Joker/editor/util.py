@@ -57,21 +57,38 @@ def recommend(title):
 	    raise RuntimeError("Paper doesn't exist in DB")
 
     recs = {}
-    # recs = set()
-    # print(paper.tag)
-    for tag in paper.tag:
-        # print(tag)
-        query = "MATCH (n:Tag {name: '" + tag.name + "'})<-[:IS_ABOUT]-(paper) return paper.title"
-        papers = db.cypher_query(query)[0]
-        
-        papers = [p for sublist in papers for p in sublist]
-        papers = list(filter(lambda paper_title: paper_title != title, papers))
-        # print(papers)
-        for paper in papers:
-            query = "MATCH (n:Paper {title: '" + paper + "'})-[:WRITTEN_BY]->(author) return author.name"
-            authors = db.cypher_query(query)[0]
-            query = "MATCH (n:Paper {title: '" + paper + "'}) return n.url"
-            url = db.cypher_query(query)[0]
-            # recs[tag.name] = papers
-            recs[paper] = [authors, url]
+    tags = ["'" + tag.name + "'" for tag in paper.tag]
+    keywords = ["'" + keyword.name + "'" for keyword in paper.keyword]
+    authors = ["'" + author.name + "'" for author in paper.author]
+    query = "MATCH (n WHERE (n:Tag AND n.name IN [" + ",".join(tags) + "]) OR (n:Keyword AND n.name IN [" + ",".join(keywords) + "]) OR (n:Author AND n.name IN [" + ",".join(authors) + "]))<-[:IS_ABOUT|CONTAINS_KEYWORD|WRITTEN_BY]-(paper) return paper.title, paper.url"
+    print(query)
+    papers = db.cypher_query(query)[0]
+    papers = list(filter(lambda paper: paper[0] != title, papers))
+
+    for paper, url in papers:
+        query = "MATCH (n:Paper {title: '" + paper + "'})-[:WRITTEN_BY]->(author) return author.name"
+        authors = db.cypher_query(query)[0]
+        recs[paper] = [authors, url]
     return recs
+
+
+def getFilterOptions():
+	papers = db.cypher_query("MATCH (n:Paper) RETURN n.title")[0]
+	authors = db.cypher_query("MATCH (n:Author) RETURN n.name")[0]
+	tags = db.cypher_query("MATCH (n:Tag) RETURN n.name")[0]
+	keywords = db.cypher_query("MATCH (n:Keyword) RETURN n.name")[0]
+
+	papers = [paperList[0] for paperList in papers]
+	authors = [authorList[0] for authorList in authors]
+	tags = [tagsList[0] for tagsList in tags]
+	keywords = [keywordsList[0] for keywordsList in keywords]
+
+	options = {
+		"papers": papers,
+		"authors": authors,
+		"tags": tags,
+		"keywords": keywords
+	}
+
+	return options
+

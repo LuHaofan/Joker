@@ -71,7 +71,7 @@
     
 </head>
 <script>
-    function draw() {
+    function draw(cypher) {
         var config = {
             container_id: "viz",
             // server_url: "bolt://localhost:7687",
@@ -82,7 +82,7 @@
             arrows: true,
             labels: {
                 "Paper": {
-                    caption: "short_title",
+                    caption: "title",
                     font: {
                         size: 18
                     }
@@ -100,8 +100,8 @@
                     },
                     size: "count"
                 },
-                "Note": {
-                    caption: false,
+                "Keyword": {
+                    caption: "name",
                     font: {
                         size: 18
                     }
@@ -120,15 +120,19 @@
                     caption: true,
                     thickness: "1"
                 },
+                "CONTAINS_KEYWORD": {
+                    caption: true,
+                    thickness: "1"
+                },
             },
-            initial_cypher: "MATCH p=()-->() RETURN p"
+            initial_cypher: cypher
         }
 
         var viz = new NeoVis.default(config);
         viz.render();
     }
 </script>
-<body onload="draw()">
+<body onload="draw('MATCH p=()-->() RETURN p')">
     {% csrf_token %}
 
     <nav class="navbar navbar-inverse" style="margin-top: 0; margin-bottom: 0;">
@@ -232,6 +236,99 @@
         </div>
     </div>
 
+    <div id="filters">
+        <label for="papers">Papers:</label>
+        <select name="papers" id="papers">
+            <option value="none"> --Select Paper-- </option>
+        </select>
+        <label for="authors">Authors:</label>
+        <select name="authors" id="authors">
+            <option value="none"> --Select Author-- </option>
+        </select>
+        <br>
+        <label for="tags">Tags:</label>
+        <select name="tags" id="tags">
+            <option value="none"> --Select Tag-- </option>
+        </select>
+        <label for="keywords">Keywords:</label>
+        <select name="keywords" id="keywords">
+            <option value="none"> --Select Keyword-- </option>
+        </select>
+    </div>
+
+    <script type="text/javascript">
+        $.ajax({
+            method: 'GET',
+            url: "{% url 'editor:get_filter_options' %}",
+            success: function (filter_options) {
+                filter_options = JSON.parse(filter_options)
+                console.log(filter_options["papers"])
+                const papers = filter_options["papers"]
+                const authors = filter_options["authors"]
+                const tags = filter_options["tags"]
+                const keywords = filter_options["keywords"]
+
+                for (var i = 0; i < papers.length; i++) {
+                    $("#papers").append("<option value='" + papers[i] + "'>" + papers[i] + "</option>");
+                }
+                for (var i = 0; i < authors.length; i++) {
+                    $("#authors").append("<option value='" + authors[i] + "'>" + authors[i] + "</option>");
+                }
+                for (var i = 0; i < tags.length; i++) {
+                    $("#tags").append("<option value='" + tags[i] + "'>" + tags[i] + "</option>");
+                }
+                for (var i = 0; i < keywords.length; i++) {
+                    $("#keywords").append("<option value='" + keywords[i] + "'>" + keywords[i] + "</option>");
+                }
+            },
+        });
+
+        $("#papers").change(function() {
+            $("#authors").val("none");
+            $("#tags").val("none");
+            $("#keywords").val("none");
+
+            if (this.value == "none") {
+                draw("MATCH p=()-->() RETURN p");
+            } else {
+                draw("MATCH p=(n:Paper {title: '" + this.value + "'})-[*1..3]-() RETURN p");
+            }
+        });
+        $("#authors").change(function() {
+            $("#papers").val("none");
+            $("#tags").val("none");
+            $("#keywords").val("none");
+
+            if (this.value == "none") {
+                draw("MATCH p=()-->() RETURN p");
+            } else {
+                draw("MATCH p=(n:Author {name: '" + this.value + "'})-[*1..2]-() RETURN p");
+            }
+        });
+        $("#tags").change(function() {
+            $("#papers").val("none");
+            $("#authors").val("none");
+            $("#keywords").val("none");
+
+            if (this.value == "none") {
+                draw("MATCH p=()-->() RETURN p");
+            } else {
+                draw("MATCH p=(n:Tag {name: '" + this.value + "'})-[*1..2]-() RETURN p");
+            }
+        });
+        $("#keywords").change(function() {
+            $("#papers").val("none");
+            $("#authors").val("none");
+            $("#tags").val("none");
+
+            if (this.value == "none") {
+                draw("MATCH p=()-->() RETURN p");
+            } else {
+                draw("MATCH p=(n:Keyword {name: '" + this.value + "'})-[*1..2]-() RETURN p");
+            }
+        });
+    </script>
+
     <div id="viz"></div>
 
     <section class="ppt-section-main" style="height: 600px">
@@ -270,8 +367,8 @@
 
         popoto.provider.node.Provider = {
             "Paper": {
-                "returnAttributes": ["short_title"],
-                "constraintAttribute": "short_title"
+                "returnAttributes": ["title"],
+                "constraintAttribute": "title"
             },
             "Author": {
                 "returnAttributes": ["name"],
@@ -284,6 +381,10 @@
             "Note": {
                 "returnAttributes": ["file_name"],
                 "constraintAttribute": "file_name"
+            },
+            "Keyword": {
+                "returnAttributes": ["name"],
+                "constraintAttribute": "name"
             },
         };
 

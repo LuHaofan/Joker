@@ -158,7 +158,10 @@ def saveTag(request):
                 
 def getRecs(request):
     title = request.GET.get('title')
-    recs = util.recommend(title[:-1])
+    recs = util.recommend(title)
     return HttpResponse(json.dumps(recs))
-    # return recs
+
+def getFilterOptions(request):
+    filterOptions = util.getFilterOptions()
+    return HttpResponse(json.dumps(filterOptions))
 
