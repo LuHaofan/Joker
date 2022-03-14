@@ -10,6 +10,9 @@ from bokeh.palettes import Blues8, Reds8, Purples8, Oranges8, Viridis8, Spectral
 from bokeh.transform import linear_cmap
 from bokeh.plotting import figure, save, from_networkx
 from bokeh.models import Circle, MultiLine, Range1d
+import igraph
+from igraph import Graph, EdgeSeq
+import plotly.graph_objects as go
 
 class SSRec:
     def __init__(self, doi, keywords, num_rec):
@@ -23,6 +26,8 @@ class SSRec:
         self.reduced_embedding = None
         self.classes = []
         self.title = None
+        self.ref_list = []
+        self.cite_list = []
 
     def setDOI(self, doi):
         self.doi = doi
@@ -103,6 +108,10 @@ class SSRec:
     def query(self):
         self.getSelfEmbedding()
         self.getRec()
+        self.getReference()
+        self.getCitations()
+        self.drawReferenceGraph()
+        self.drawCitationGraph()
         self.getSimilarityScores()
         self.sortRecListBySimilarity()
         self.dumpToFile()
@@ -147,9 +156,188 @@ class SSRec:
         # show(plot)
         save(plot, filename="editor/static/editor/tmp/sim_graph.html")
 
+    def getReference(self):
+        qry = "https://api.semanticscholar.org/graph/v1/paper/{}/references?fields=title,authors".format(self.paperId)
+        response = requests.get(qry).json()
+        ref = response["data"]
+        self.ref_list = [item["citedPaper"] for item in ref]
+
+    def getCitations(self):
+        qry = "https://api.semanticscholar.org/graph/v1/paper/{}/citations?fields=title,authors".format(self.paperId)
+        response = requests.get(qry).json()
+        cite = response["data"]
+        self.cite_list = [item["citingPaper"] for item in cite]
+
+    def drawReferenceGraph(self):
+        nr_vertices = len(self.ref_list)+1
+        v_label = [self.title]
+        for item in self.ref_list:
+            title = item["title"]
+            authors = ""
+            for a in item["authors"]:
+                authors+=a["name"]
+                authors+=", "
+            v_label.append(title+" | "+authors[:-2])
+
+        G = Graph.Tree(nr_vertices, nr_vertices-1) # 2 stands for children number
+        lay = G.layout('rt')
+
+        position = {k: lay[k] for k in range(nr_vertices)}
+        Y = [lay[k][1] for k in range(nr_vertices)]
+        M = max(Y)
+
+        es = EdgeSeq(G) # sequence of edges
+        E = [e.tuple for e in G.es] # list of edges
+
+        L = len(position)
+        Xn = [position[k][0] for k in range(L)]
+        Yn = [2*M-position[k][1] for k in range(L)]
+        Xe = []
+        Ye = []
+        for edge in E:
+            Xe+=[position[edge[0]][0],position[edge[1]][0], None]
+            Ye+=[2*M-position[edge[0]][1],2*M-position[edge[1]][1], None]
+
+        labels = v_label
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=Xe,
+                        y=Ye,
+                        mode='lines',
+                        line=dict(color='rgb(210,210,210)', width=1),
+                        hoverinfo='none'
+                        ))
+        fig.add_trace(go.Scatter(x=Xn,
+                        y=Yn,
+                        mode='markers',
+                        name='bla',
+                        marker=dict(symbol='circle-dot',
+                                        size=18,
+                                        color='#6175c1',    #'#DB4551',
+                                        line=dict(color='rgb(50,50,50)', width=1)
+                                        ),
+                        text=labels,
+                        hoverinfo='text',
+                        opacity=0.8
+                        ))
+        axis = dict(showline=False, # hide axis line, grid, ticklabels and  title
+                    zeroline=False,
+                    showgrid=False,
+                    showticklabels=False,
+                    )
+
+        fig.update_layout(title= 'Reference Graph',
+                    font_size=12,
+                    showlegend=False,
+                    xaxis=axis,
+                    yaxis=axis,
+                    margin=dict(l=40, r=40, b=85, t=100),
+                    hovermode='closest',
+                    plot_bgcolor='rgb(248,248,248)'
+                    )
+        fig.write_html("editor/static/editor/tmp/reference.html")
+
+    def drawCitationGraph(self):
+        if len(self.cite_list) == 0:
+            G = nx.Graph()
+            G.add_node(0, title = self.title, similarity = 1)
+            pos = nx.spring_layout(G,weight='similarity')
+            title = 'Citation Graph'
+            #Establish which categories will appear when hovering over each node
+            color_palette = Reds8
+            HOVER_TOOLTIPS = [("title", "@title")]
+
+            #Create a plot — set dimensions, toolbar, and title
+            plot = figure(tooltips = HOVER_TOOLTIPS,
+                        tools="pan,wheel_zoom,save,reset", active_scroll='wheel_zoom',
+                        x_range=Range1d(-1.1, 1.1), y_range=Range1d(-1.1, 1.1), title=title)
+
+            #Create a network graph object with spring layout
+            # https://networkx.github.io/documentation/networkx-1.9/reference/generated/networkx.drawing.layout.spring_layout.html
+            network_graph = from_networkx(G, pos, scale=10, center=(0, 0))
+            #Set node size and color
+            network_graph.node_renderer.glyph = Circle(size=50, fill_color="Blue")
+
+            #Set edge opacity and width
+            network_graph.edge_renderer.glyph = MultiLine(line_alpha=0.5, line_width=1)
+
+            #Add network graph to the plot
+            plot.renderers.append(network_graph)
+
+            save(plot, filename="editor/static/editor/tmp/citation.html")
+            return
+
+        nr_vertices = len(self.cite_list)+1
+        v_label = [self.title]
+        for item in self.cite_list:
+            title = item["title"]
+            authors = ""
+            for a in item["authors"]:
+                authors+=a["name"]
+                authors+=", "
+            v_label.append(title+" | "+authors[:-2])
+
+        G = Graph.Tree(nr_vertices, nr_vertices-1) # 2 stands for children number
+        lay = G.layout('rt')
+
+        position = {k: lay[k] for k in range(nr_vertices)}
+        Y = [lay[k][1] for k in range(nr_vertices)]
+        M = max(Y)
+
+        es = EdgeSeq(G) # sequence of edges
+        E = [e.tuple for e in G.es] # list of edges
+
+        L = len(position)
+        Xn = [position[k][0] for k in range(L)]
+        Yn = [2*M-position[k][1] for k in range(L)]
+        Xe = []
+        Ye = []
+        for edge in E:
+            Xe+=[position[edge[0]][0],position[edge[1]][0], None]
+            Ye+=[2*M-position[edge[0]][1],2*M-position[edge[1]][1], None]
+
+        labels = v_label
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=Xe,
+                        y=Ye,
+                        mode='lines',
+                        line=dict(color='rgb(210,210,210)', width=1),
+                        hoverinfo='none'
+                        ))
+        fig.add_trace(go.Scatter(x=Xn,
+                        y=Yn,
+                        mode='markers',
+                        name='bla',
+                        marker=dict(symbol='circle-dot',
+                                        size=18,
+                                        color='#6175c1',    #'#DB4551',
+                                        line=dict(color='rgb(50,50,50)', width=1)
+                                        ),
+                        text=labels,
+                        hoverinfo='text',
+                        opacity=0.8
+                        ))
+        axis = dict(showline=False, # hide axis line, grid, ticklabels and  title
+                    zeroline=False,
+                    showgrid=False,
+                    showticklabels=False,
+                    )
+
+        fig.update_layout(title= 'Reference Graph',
+                    font_size=12,
+                    showlegend=False,
+                    xaxis=axis,
+                    yaxis=axis,
+                    margin=dict(l=40, r=40, b=85, t=100),
+                    hovermode='closest',
+                    plot_bgcolor='rgb(248,248,248)'
+                    )
+        fig.write_html("editor/static/editor/tmp/citation.html")
+
 
 if __name__ == "__main__":
     ssr = SSRec(doi = "10.1145/3422604.3425951", keywords=['wifi', 'sensing', 'localization'], num_rec= 30)
     ssr.query()
-    ssr.drawSimilarityGraph()
+    ssr.drawReferenceGraph()
+    # ssr.drawCitationGraph()
+    # ssr.drawSimilarityGraph()
 

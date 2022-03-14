@@ -389,13 +389,16 @@
                 </table>
             </div>
         </div>
-        <div class="container-fluid">
+        <div class="container-fluid" id = "graphs">
             <div class="row">
-                <div class="col-sm-6 embed-responsive embed-responsive-4by3">
-                    <embed id="sim_graph" type="text/html" src="#" width="600" height="600" style="float:left">
+                <div class="col-sm-4 embed-responsive embed-responsive-4by3">
+                    <embed id="sim_graph" type="text/html" src="#" style="float:left">
                 </div>
-                <div class="col-sm-6 embed-responsive embed-responsive-4by3">
-                    <embed id="citation_graph" type="text/html" src="#" width="600" height="600" style="float:left">
+                <div class="col-sm-4 embed-responsive embed-responsive-4by3">
+                    <embed id="reference_graph" type="text/html" src="#" height="600px" style="float:left">
+                </div>
+                <div class="col-sm-4 embed-responsive embed-responsive-4by3">
+                    <embed id="citation_graph" type="text/html" src="#" style="float:left">
                 </div>
             </div>
         </div>
@@ -487,7 +490,10 @@
                                     console.log(title)
                                     $("#paper-outside table tbody").append("<tr><td>" + title + "</td><td>" + authors_list + "</td><td>" + url + "</td><td>" + (similarity * 100).toFixed(3) + "%" + "</td></tr>");
                                     $("#sim_graph").attr("src", "{% static 'editor/tmp/sim_graph.html' %}")
+                                    $("#reference_graph").attr("src", "{% static 'editor/tmp/reference.html' %}")
+                                    $("#citation_graph").attr("src", "{% static 'editor/tmp/citation.html' %}")
                                     $("#loading").hide();
+                                    $("#graphs").show();
                                 }
                             })
                         },
@@ -520,6 +526,7 @@
                                 console.log(tag_list.substr(0, tag_list.length - 1));
                                 get_semantic_scholar_data(doi, tag_list.substr(0, tag_list.length - 1))
                                 $("#loading").show();
+                                $("#graphs").hide();
                             });
                             console.log(tentative_tags);
                             $.get(path, function (md) {
